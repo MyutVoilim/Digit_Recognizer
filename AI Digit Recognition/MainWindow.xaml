@@ -11,8 +11,8 @@
         <Button x:Name="Button1" Content="Test 2" HorizontalAlignment="Left" Margin="60,191,0,0" VerticalAlignment="Top" Click="Button_Click" Width="63"/>
         <Label x:Name="Text2" Content="Text 2" HorizontalAlignment="Left" Margin="180,199,0,0" VerticalAlignment="Top"/>
         <Button x:Name="Button2" Content="Test 1" HorizontalAlignment="Left" Margin="60,152,0,0" VerticalAlignment="Top" Click="Button_Click" Width="63"/>
-        <Button x:Name="Button3" Content="Test 3" HorizontalAlignment="Left" Margin="60,236,0,0" VerticalAlignment="Top" Click="Button_Click" Width="62"/>
-        <Canvas x:Name="fakeCanvas" Background="#FFB92929" Margin="343,117,139,105" MouseLeftButtonUp="fakeCanvas_MouseLeftButtonUp"/>
+        <Button x:Name="Button3" Content="Load Digit" HorizontalAlignment="Left" Margin="51,61,0,0" VerticalAlignment="Top" Click="Button_Click" Width="83" Height="27"/>
+        <Canvas x:Name="fakeCanvas" Background="#FFB92929" Margin="348,61,172,93" MouseLeftButtonUp="fakeCanvas_MouseLeftButtonUp" Height="280" Width="280" MouseDown="onCanvasMouseDown" MouseMove="onCanvasMouseMove" MouseUp="onCanvasMouseUp"/>
 
     </Grid>
 </Window>

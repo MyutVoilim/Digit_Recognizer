@@ -14,47 +14,51 @@ namespace AI_Digit_Recognition
 {
     internal class CanvasFrame
     {
-        //Grayscale values between 0 and 255 for a x * y grid
-        //private int[,] _canvasData;
-        private CanvasData[,] _canvasData = new CanvasData[_canvasDim, _canvasDim];
-        //private int _rows, _cols = 0;
+        LoadFile _dataFile;
+        //Holds a INotify property that will later bind with the canvas to update children
+        private CanvasData[,] _canvasData;
+        //Canvas that will be displayed
         private Canvas _digitCanvas;
-        //Size of canvas in pixels
-        private const int _canvasSize = 280;
+        //Size of canvas in pixels, assums canvas is sqaure
+        private int _canvasSize;
         //The about of units across the x and y axis
-        private const int _canvasDim = 28;
+        private int _canvasDim;
         //The size of individual blocks withing the grid relative to the canvas size
-        private const int _blockSize = _canvasSize / _canvasDim;
-
-        private Random rnd = new Random();
+        private int _blockSize;
 
         //Default with value of 0 for grid of 28 x 28
-        public CanvasFrame(Canvas digitCanvas)
+        public CanvasFrame(Canvas digitCanvas, int CanvasDim, string file)
         {
+            _canvasData = new CanvasData[CanvasDim, CanvasDim];
             _digitCanvas = digitCanvas;
-            _digitCanvas.Background = Brushes.Blue;
-            _digitCanvas.Width = _canvasSize;
-            _digitCanvas.Height = _canvasSize;
-            //_canvasData = canvasData.Data;
+            _canvasDim = CanvasDim;
+            _canvasSize = (int) digitCanvas.Width;
+            _blockSize = (int)(_canvasSize / CanvasDim);
+            _dataFile = new LoadFile(file);
             CreateGrid();
         }
 
-        //Creates grid lines for the canvas based on the target rows and columns
+        //Creates a grid based on _blockSize that is fills on the canvas  as rectangles and then Binds the respective values to
+        //the positions in the _canvasData, The Grid will automatically update when values are changed in _canvasData
         private void CreateGrid()
         {
+            //Loop through each position in _canvasData
             for (int row = 0; row < _canvasDim; row++)
             {
                 for (int col = 0; col < _canvasDim; col++)
                 {
+                    //Fill _canvasData
+                    _canvasData[row, col] = new CanvasData { Value = 0 };
+                    //Create the Blocks
                     Rectangle block = new Rectangle();
                     block.Width = _blockSize;
                     block.Height = _blockSize;
-                    _canvasData[row, col] = new CanvasData { Value = 0 };
+                    //Tie the Value property from the CanvasData object to each block and convert the int values into grayscale brush values
                     block.DataContext = _canvasData[row, col];
                     Binding binding = new Binding("Value");
                     binding.Converter = new IntToGrayscaleBrushConverter();
                     block.SetBinding(Rectangle.FillProperty, binding);
-                   // block.Fill = new SolidColorBrush(Color.FromRgb((byte)rnd.Next(0, 255), (byte)rnd.Next(0, 255), (byte)rnd.Next(0, 255)));
+                    //Add Blocks to _digitCanvas
                     _digitCanvas.Children.Add(block);
                     Canvas.SetLeft(block, (row * _blockSize));
                     Canvas.SetTop(block, (col * _blockSize));
@@ -62,35 +66,32 @@ namespace AI_Digit_Recognition
             }
         }
 
-        public Canvas GetCanvas()
+        public void DrawOnGrid(int x, int y)
         {
-            return _digitCanvas;
-        }
-        public int GetCanvasSize()
-        {
-            return _canvasSize;
-        }
-
-        public void changeValue(int value)
-        {
-            _canvasData[0, 10].Value = value;
-        }
-    }
-    public class IntToGrayscaleBrushConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is int intValue && intValue >= 0 && intValue <= 255)
+            int xPos = x / _blockSize;
+            int yPos = y / _blockSize;
+            if (xPos >= 0 && xPos < _canvasDim && yPos >= 0 && yPos < _canvasDim)
             {
-                byte byteValue = (byte)intValue;
-                return new SolidColorBrush(Color.FromRgb(byteValue, byteValue, byteValue));
+                _canvasData[xPos, yPos].Value = 255;
             }
-            return DependencyProperty.UnsetValue;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public void LoadLine() 
         {
-            throw new NotImplementedException();
+            _dataFile.ReadFile(_canvasData);
+
+        }
+
+        public Canvas Canvas { get { return _digitCanvas; } }
+        public int Size { get { return _canvasSize; } }
+
+        public int GetValueAt(int row, int col)
+        {
+            return _canvasData[row, col].Value;
+        }
+        public void SetValueAt(int row, int col, int value)
+        {
+            _canvasData[row,col].Value = value;
         }
     }
 }

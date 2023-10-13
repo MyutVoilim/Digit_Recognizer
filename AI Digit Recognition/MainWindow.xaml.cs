@@ -26,10 +26,11 @@ namespace AI_Digit_Recognition
         private CanvasData myCanvasData = new CanvasData();
         private Canvas testingCanvas = new Canvas();
         private Random rnd = new Random();
+        private bool isDrawing = false;
         public MainWindow()
         {
             InitializeComponent();
-            myCanvas = new CanvasFrame(fakeCanvas);
+            myCanvas = new CanvasFrame(fakeCanvas, 28, "C:\\Users\\tom10\\source\\repos\\AI Digit Recognition\\AI Digit Recognition\\Data\\train.csv");
             //testing();
             //createTimer();
         }
@@ -50,9 +51,8 @@ namespace AI_Digit_Recognition
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            ColorGrid();
-            myCanvas.changeValue(100);
-            Text1.Content = "hit";
+            myCanvas.LoadLine();
+            Text1.Content = "line loaded";
         }
         private void ColorGrid()
         {
@@ -75,6 +75,23 @@ namespace AI_Digit_Recognition
         private void fakeCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             testing();
+        }
+
+        private void onCanvasMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            isDrawing = true;
+            myCanvas.DrawOnGrid((int) e.GetPosition(myCanvas.Canvas).X, (int)e.GetPosition(myCanvas.Canvas).Y);
+        }
+
+        private void onCanvasMouseMove(object sender, MouseEventArgs e)
+        {
+            if (isDrawing) { myCanvas.DrawOnGrid((int)e.GetPosition(myCanvas.Canvas).X, (int)e.GetPosition(myCanvas.Canvas).Y); }
+            Text1.Content = (int)e.GetPosition(myCanvas.Canvas).X + " " + (int)e.GetPosition(myCanvas.Canvas).Y;
+        }
+
+        private void onCanvasMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            isDrawing = false;
         }
     }
 }
