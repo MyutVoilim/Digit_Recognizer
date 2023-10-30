@@ -8,11 +8,13 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid x:Name="DigitGrid" RenderTransformOrigin="0.585,0.573">
         <Label x:Name="Text1" Content="Text 1" HorizontalAlignment="Left" Margin="180,148,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="Button1" Content="Test 2" HorizontalAlignment="Left" Margin="60,191,0,0" VerticalAlignment="Top" Click="Button_Click" Width="63"/>
+        <Button x:Name="Button1" Content="Save AI" HorizontalAlignment="Left" Margin="60,303,0,0" VerticalAlignment="Top" Click="SaveAI" Width="63"/>
         <Label x:Name="Text2" Content="Text 2" HorizontalAlignment="Left" Margin="180,199,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="Button2" Content="Test 1" HorizontalAlignment="Left" Margin="60,152,0,0" VerticalAlignment="Top" Click="Button_Click" Width="63"/>
+        <Button x:Name="Train_AI_Button" Content="Start Training" HorizontalAlignment="Left" Margin="60,152,0,0" VerticalAlignment="Top" Click="Train_AI" Width="63"/>
         <Button x:Name="Button3" Content="Load Digit" HorizontalAlignment="Left" Margin="51,61,0,0" VerticalAlignment="Top" Click="Button_Click" Width="83" Height="27"/>
         <Canvas x:Name="fakeCanvas" Background="#FFB92929" Margin="348,61,172,93" MouseLeftButtonUp="fakeCanvas_MouseLeftButtonUp" Height="280" Width="280" MouseDown="onCanvasMouseDown" MouseMove="onCanvasMouseMove" MouseUp="onCanvasMouseUp"/>
+        <Button Content="Load AI" HorizontalAlignment="Left" Margin="69,278,0,0" VerticalAlignment="Top" Click="Load_AI"/>
+        <Button Content="Stop Training" HorizontalAlignment="Left" Margin="55,191,0,0" VerticalAlignment="Top" Click="StopTraining"/>
 
     </Grid>
 </Window>

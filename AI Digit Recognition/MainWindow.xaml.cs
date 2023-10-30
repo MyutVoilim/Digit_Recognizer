@@ -27,6 +27,8 @@ namespace AI_Digit_Recognition
         private Canvas testingCanvas = new Canvas();
         private Random rnd = new Random();
         private bool isDrawing = false;
+        private AIDigitModel digitAi = new AIDigitModel(new int[2] { 10, 10 });
+       // private AIDigitModel digitModel = new AIDigitModel(new int[2] {10, 10});
         public MainWindow()
         {
             InitializeComponent();
@@ -92,6 +94,25 @@ namespace AI_Digit_Recognition
         private void onCanvasMouseUp(object sender, MouseButtonEventArgs e)
         {
             isDrawing = false;
+        }
+
+        private void Train_AI(object sender, RoutedEventArgs e)
+        {
+            digitAi.Train("C:\\Users\\tom10\\source\\repos\\AI Digit Recognition\\AI Digit Recognition\\Data\\train.csv", .01f, 1);
+        }
+
+        private void Load_AI(object sender, RoutedEventArgs e)
+        {
+            digitAi.LoadFromFile("C:\\Users\\tom10\\source\\repos\\AI Digit Recognition\\AI Digit Recognition\\Data\\BasicAIData.txt");
+        }
+
+        private void StopTraining(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void SaveAI(object sender, RoutedEventArgs e)
+        {
+            digitAi.SaveToFile("C:\\Users\\tom10\\source\\repos\\AI Digit Recognition\\AI Digit Recognition\\Data\\BasicAIData.txt");
         }
     }
 }
