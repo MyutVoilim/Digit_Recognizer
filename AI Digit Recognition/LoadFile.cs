@@ -33,7 +33,7 @@ namespace AI_Digit_Recognition
                 try
                 {
                     string[] line = reader.ReadLine().Split(',');
-                    for (int i = 0; i < line.Length; i++)
+                    for (int i = 1; i < line.Length; i++)
                     {
                         data[i % 28, i / 28].Value = int.Parse(line[i]);
                     }

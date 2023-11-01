@@ -93,5 +93,28 @@ namespace AI_Digit_Recognition
         {
             _canvasData[row,col].Value = value;
         }
+        public float[,] getCanvasArray()
+        {
+            float[,] canvasArray = new float[28,28];
+            for (int i = 0; i < 28; i++)
+            {
+                for (int j = 0; j < 28; j++)
+                {
+                    canvasArray[i,j] = (float)_canvasData[i,j].Value; 
+                }
+            }
+            return canvasArray;
+        }
+
+        public void ClearCanvas()
+        {
+            for (int i = 0; i < _canvasDim; i++)
+            {
+                for (int j = 0; j < _canvasDim; j++)
+                {
+                    _canvasData[i, j].Value = 0;
+                }
+            }
+        }
     }
 }
