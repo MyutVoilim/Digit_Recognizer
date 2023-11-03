@@ -72,7 +72,18 @@ namespace AI_Digit_Recognition
             int yPos = y / _blockSize;
             if (xPos >= 0 && xPos < _canvasDim && yPos >= 0 && yPos < _canvasDim)
             {
-                _canvasData[xPos, yPos].Value = 255;
+
+                ValidateDraw(xPos, yPos, 255);
+                //Cirlce around clicked point
+                ValidateDraw(xPos + 1, yPos, 50);
+                ValidateDraw(xPos - 1, yPos, 50);
+                ValidateDraw(xPos, yPos + 1, 50);
+                ValidateDraw(xPos, yPos - 1, 50);
+                //Slight gradiant in the corners
+                ValidateDraw(xPos + 1, yPos - 1, 25);
+                ValidateDraw(xPos - 1, yPos - 1, 25);
+                ValidateDraw(xPos + 1, yPos + 1, 25);
+                ValidateDraw(xPos - 1, yPos + 1, 25);
             }
         }
 
@@ -114,6 +125,14 @@ namespace AI_Digit_Recognition
                 {
                     _canvasData[i, j].Value = 0;
                 }
+            }
+        }
+
+        private void ValidateDraw(int x, int y, int intensity)
+        {
+            if (x >= 0 && x <= 27 && y >= 0 && y <= 27)
+            {
+                _canvasData[x, y].Value += intensity;
             }
         }
     }

@@ -31,11 +31,12 @@ namespace AI_Digit_Recognition
         private Random rnd = new Random();
         private bool isDrawing = false;
         private AIDigitModel digitAi = new AIDigitModel(new int[3] { 512, 256, 128});
-        int x = 3;
+        int[] confidenceValues = new int[10];
         public MainWindow()
         {
             InitializeComponent();
             myCanvas = new CanvasFrame(fakeCanvas, 28, "C:\\Users\\tom10\\source\\repos\\AI Digit Recognition\\AI Digit Recognition\\Data\\train.csv");
+            CreateConfidenceChart();
             testingPlot();
             //testing();
             //createTimer();
@@ -58,14 +59,7 @@ namespace AI_Digit_Recognition
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             myCanvas.LoadLine();
-            Debug.WriteLine(string.Join(" , ", (myCanvas.getCanvasArray())));
-            int[] temp = digitAi.Predict(myCanvas.getCanvasArray());
-            int maxValue = 0;
-            for (int i = 0; i < 10; i++)
-            {
-                if (maxValue < temp[i]) maxValue = i;
-            }
-            Text1.Content = "(" + maxValue + ") " + string.Join(", ", temp);
+            testingPlot();
  
         }
         private void ColorGrid()
@@ -100,13 +94,7 @@ namespace AI_Digit_Recognition
         private void onCanvasMouseMove(object sender, MouseEventArgs e)
         {
             if (isDrawing) { myCanvas.DrawOnGrid((int)e.GetPosition(myCanvas.Canvas).X, (int)e.GetPosition(myCanvas.Canvas).Y); }
-            int[] temp = digitAi.Predict(myCanvas.getCanvasArray());
-            int maxValue = 0;
-            for (int i = 0; i < 10; i++)
-            {
-                if (maxValue < temp[i]) maxValue = i;
-            }
-            Text1.Content = "(" + maxValue + ") " + string.Join(", ", temp);
+            testingPlot();
         }
 
         private void onCanvasMouseUp(object sender, MouseButtonEventArgs e)
@@ -145,8 +133,6 @@ namespace AI_Digit_Recognition
 
         private void StopTraining(object sender, RoutedEventArgs e)
         {
-            x++;
-                ConfidenceChart.Refresh();
         }
 
         private void SaveAI(object sender, RoutedEventArgs e)
@@ -159,18 +145,32 @@ namespace AI_Digit_Recognition
             myCanvas.ClearCanvas();
         }
 
-        private void testingPlot() { 
+        private void testingPlot() {
+            confidenceValues = digitAi.Predict(myCanvas.getCanvasArray());
+            int maxValue = 0;
 
-            // create sample data
-            double[] values = { 26, 20, 23, 7, 16, x};
+            for (int i = 0; i < 10; i++)
+            {
+                if (maxValue < confidenceValues[i]) maxValue = i;
+            }
+            Text1.Content = maxValue;
 
-            ConfidenceChart.Plot.AddBar(values);
+            ConfidenceChart.Reset();
+            ConfidenceChart.Plot.AddBar(confidenceValues.Select(i => (double) i).ToArray());
             ConfidenceChart.Refresh();
         }
+        private void CreateConfidenceChart()
+        {
+            string[] labels = { "0", "1","2","3","4","5","6","7","8","9"};
+            double[] positions = {0, 1, 2, 3, 4, 6, 7, 8, 9, 10};
+            ConfidenceChart.Plot.AddBar(confidenceValues.Select(i => (double)i).ToArray(), positions);
+            ConfidenceChart.Plot.XTicks(positions, labels);
+            ConfidenceChart.Plot.SetAxisLimits(yMin: 0);
 
-        //Add visuals for ai probablity
-        //Beautify
-        //Ability for ai to dynamically react to user drawing
-        //Progress bar for training
+        }
+        //Ensure proper z-index
+        //Clean up code
+        //Visually make it look good
+        //comment functionality
     }
 }

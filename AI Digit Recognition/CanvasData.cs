@@ -19,6 +19,7 @@ namespace AI_Digit_Recognition
                 if (_value != value)
                 {
                     _value = value;
+                    if (_value > 255) _value = 255;
                     OnPropertyChanged(nameof(Value));
                 }
             }

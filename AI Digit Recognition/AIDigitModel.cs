@@ -229,6 +229,7 @@ namespace AI_Digit_Recognition
                             }
 
                             Backpropagate(targetOutput, learningRate);
+
                         }
                     }
                 }

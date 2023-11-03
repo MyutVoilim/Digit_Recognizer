@@ -7,18 +7,22 @@
         xmlns:local="clr-namespace:AI_Digit_Recognition"
         xmlns:oxy="http://oxyplot.org/wpf" x:Name="mainWindow" x:Class="AI_Digit_Recognition.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="614" Width="820">
     <Grid x:Name="DigitGrid" RenderTransformOrigin="0.585,0.573">
-        <Label x:Name="Text1" Content="Text 1" HorizontalAlignment="Left" Margin="180,382,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="Button1" Content="Save AI" HorizontalAlignment="Left" Margin="60,303,0,0" VerticalAlignment="Top" Click="SaveAI" Width="63"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="515*"/>
+            <ColumnDefinition Width="286*"/>
+        </Grid.ColumnDefinitions>
+        <Label x:Name="Text1" Content="1" HorizontalAlignment="Left" Margin="399,212,0,0" VerticalAlignment="Top" FontSize="22"/>
+        <Button x:Name="Button1" Content="Save AI" HorizontalAlignment="Left" Margin="43,417,0,0" VerticalAlignment="Top" Click="SaveAI" Width="130" Grid.Column="1" Height="55"/>
         <Label x:Name="Text2" Content="Text 2" HorizontalAlignment="Left" Margin="180,199,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="Train_AI_Button" Content="Start Training" HorizontalAlignment="Left" Margin="60,152,0,0" VerticalAlignment="Top" Click="Train_AI" Width="63"/>
-        <Button x:Name="Button3" Content="Load Digit" HorizontalAlignment="Left" Margin="51,61,0,0" VerticalAlignment="Top" Click="Button_Click" Width="83" Height="27"/>
-        <Canvas x:Name="fakeCanvas" Background="#FFB92929" Margin="416,121,104,33" MouseLeftButtonUp="fakeCanvas_MouseLeftButtonUp" Height="280" Width="280" MouseDown="onCanvasMouseDown" MouseMove="onCanvasMouseMove" MouseUp="onCanvasMouseUp"/>
-        <Button Content="Load AI" HorizontalAlignment="Left" Margin="69,278,0,0" VerticalAlignment="Top" Click="Load_AI"/>
-        <Button Content="Stop Training" HorizontalAlignment="Left" Margin="55,191,0,0" VerticalAlignment="Top" Click="StopTraining"/>
-        <Button x:Name="clearButton" Content="Clear" HorizontalAlignment="Left" Margin="730,367,0,0" VerticalAlignment="Top" Click="ClearCanvas"/>
-        <ScottPlot:WpfPlot x:Name="ConfidenceChart" Margin="154,55,444,240" />
+        <Button x:Name="Train_AI_Button" Content="Start Training" HorizontalAlignment="Left" Margin="92,284,0,0" VerticalAlignment="Top" Click="Train_AI" Width="128" Height="56"/>
+        <Button x:Name="Button3" Content="Load Digit" HorizontalAlignment="Left" Margin="43,270,0,0" VerticalAlignment="Top" Click="Button_Click" Width="130" Height="56" Grid.Column="1"/>
+        <Canvas x:Name="fakeCanvas" Background="#FFB92929" Margin="264,268,276,50" MouseLeftButtonUp="fakeCanvas_MouseLeftButtonUp" Height="280" Width="280" MouseDown="onCanvasMouseDown" MouseMove="onCanvasMouseMove" MouseUp="onCanvasMouseUp" Grid.ColumnSpan="2"/>
+        <Button Content="Load AI" HorizontalAlignment="Left" Margin="43,353,0,0" VerticalAlignment="Top" Click="Load_AI" Height="55" Width="130" Grid.Column="1"/>
+        <Button Content="Stop Training" HorizontalAlignment="Left" Margin="92,348,0,0" VerticalAlignment="Top" Click="StopTraining" Height="56" Width="129"/>
+        <Button x:Name="clearButton" Content="Clear" HorizontalAlignment="Left" Margin="43,493,0,0" VerticalAlignment="Top" Click="ClearCanvas" Grid.Column="1" Height="55" Width="130"/>
+        <ScottPlot:WpfPlot x:Name="ConfidenceChart" Margin="105,0,105,368" Grid.ColumnSpan="2" />
         <Image x:Name="testImage" HorizontalAlignment="Left" Height="100" Margin="269,298,0,0" VerticalAlignment="Top" Width="100"/>
 
     </Grid>
