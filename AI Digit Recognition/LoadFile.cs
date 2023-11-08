@@ -10,15 +10,18 @@ namespace AI_Digit_Recognition
     internal class LoadFile
     {
         private string _path;
-        private int _currentDigit = 1;
+        private int _currentDigit = 1; // Keeps track of the current line
 
         public LoadFile(string path)
         {
             _path = path;
         }
 
-
-        public void ReadFile(CanvasData[,] data)
+        /// <summary>
+        /// Reads one line from file and then increments to read the next line when called
+        /// </summary>
+        /// <param name="trainingData"></param>
+        public void ReadFileLine(CanvasData[,] trainingData)
         {
             using (StreamReader reader = new StreamReader(_path))
             {
@@ -35,7 +38,7 @@ namespace AI_Digit_Recognition
                     string[] line = reader.ReadLine().Split(',');
                     for (int i = 1; i < line.Length; i++)
                     {
-                        data[i % 28, i / 28].Value = int.Parse(line[i]);
+                        trainingData[i % 28, i / 28].Value = int.Parse(line[i]);
                     }
                 } catch(Exception ex)
                 {
@@ -44,4 +47,5 @@ namespace AI_Digit_Recognition
             }
         }
     }
+
 }

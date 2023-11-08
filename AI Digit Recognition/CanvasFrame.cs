@@ -14,17 +14,20 @@ namespace AI_Digit_Recognition
 {
     internal class CanvasFrame
     {
-        LoadFile _dataFile;
+        private LoadFile _dataFile;
         //Holds a INotify property that will later bind with the canvas to update children
         private CanvasData[,] _canvasData;
         //Canvas that will be displayed
         private Canvas _digitCanvas;
-        //Size of canvas in pixels, assums canvas is sqaure
-        private int _canvasSize;
         //The about of units across the x and y axis
         private int _canvasDim;
         //The size of individual blocks withing the grid relative to the canvas size
         private int _blockSize;
+
+        // Constants for drawing intensities
+        private const int MaxIntensity = 255;
+        private const int MidIntensity = 50;
+        private const int LowIntensity = 25;
 
         //Default with value of 0 for grid of 28 x 28
         public CanvasFrame(Canvas digitCanvas, int CanvasDim, string file)
@@ -32,14 +35,14 @@ namespace AI_Digit_Recognition
             _canvasData = new CanvasData[CanvasDim, CanvasDim];
             _digitCanvas = digitCanvas;
             _canvasDim = CanvasDim;
-            _canvasSize = (int) digitCanvas.Width;
-            _blockSize = (int)(_canvasSize / CanvasDim);
+            _blockSize = (int)(_digitCanvas.Width / CanvasDim);
             _dataFile = new LoadFile(file);
             CreateGrid();
         }
 
-        //Creates a grid based on _blockSize that is fills on the canvas  as rectangles and then Binds the respective values to
-        //the positions in the _canvasData, The Grid will automatically update when values are changed in _canvasData
+        /// <summary>
+        /// Creates a square grid based on blockSize and binds canvas children to matrix from CanvasData to automatically update when CavasData is changed
+        /// </summary>
         private void CreateGrid()
         {
             //Loop through each position in _canvasData
@@ -66,6 +69,11 @@ namespace AI_Digit_Recognition
             }
         }
 
+        /// <summary>
+        /// Draws on canvas
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         public void DrawOnGrid(int x, int y)
         {
             int xPos = x / _blockSize;
@@ -73,43 +81,72 @@ namespace AI_Digit_Recognition
             if (xPos >= 0 && xPos < _canvasDim && yPos >= 0 && yPos < _canvasDim)
             {
 
-                ValidateDraw(xPos, yPos, 255);
+                ValidateDraw(xPos, yPos, MaxIntensity);
                 //Cirlce around clicked point
-                ValidateDraw(xPos + 1, yPos, 50);
-                ValidateDraw(xPos - 1, yPos, 50);
-                ValidateDraw(xPos, yPos + 1, 50);
-                ValidateDraw(xPos, yPos - 1, 50);
+                ValidateDraw(xPos + 1, yPos, MidIntensity);
+                ValidateDraw(xPos - 1, yPos, MidIntensity);
+                ValidateDraw(xPos, yPos + 1, MidIntensity);
+                ValidateDraw(xPos, yPos - 1, MidIntensity);
                 //Slight gradiant in the corners
-                ValidateDraw(xPos + 1, yPos - 1, 25);
-                ValidateDraw(xPos - 1, yPos - 1, 25);
-                ValidateDraw(xPos + 1, yPos + 1, 25);
-                ValidateDraw(xPos - 1, yPos + 1, 25);
+                ValidateDraw(xPos + 1, yPos - 1, LowIntensity);
+                ValidateDraw(xPos - 1, yPos - 1, LowIntensity);
+                ValidateDraw(xPos + 1, yPos + 1, LowIntensity);
+                ValidateDraw(xPos - 1, yPos + 1, LowIntensity);
             }
         }
 
+        /// <summary>
+        /// Grabs a line of data from training data cvs
+        /// </summary>
         public void LoadLine() 
         {
-            _dataFile.ReadFile(_canvasData);
+            _dataFile.ReadFileLine(_canvasData);
 
         }
 
-        public Canvas Canvas { get { return _digitCanvas; } }
-        public int Size { get { return _canvasSize; } }
+        /// <summary>
+        /// Gets canvas property
+        /// </summary>
+        public Canvas Canvas => _digitCanvas;
 
+
+        /// <summary>
+        /// Gets canvas size property
+        /// </summary>
+        public int Size { get => (int)_digitCanvas.Width; }
+
+        /// <summary>
+        /// Gets specific canvasData index value
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="col"></param>
+        /// <returns></returns>
         public int GetValueAt(int row, int col)
         {
             return _canvasData[row, col].Value;
         }
+
+        /// <summary>
+        /// Sets specific canvasData index to a value
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="col"></param>
+        /// <param name="value"></param>
         public void SetValueAt(int row, int col, int value)
         {
             _canvasData[row,col].Value = value;
         }
-        public float[,] getCanvasArray()
+
+        /// <summary>
+        /// Gets the canvasData as a int[,] array
+        /// </summary>
+        /// <returns></returns>
+        public float[,] GetCanvasArray()
         {
             float[,] canvasArray = new float[28,28];
-            for (int i = 0; i < 28; i++)
+            for (int i = 0; i < _canvasDim; i++)
             {
-                for (int j = 0; j < 28; j++)
+                for (int j = 0; j < _canvasDim; j++)
                 {
                     canvasArray[i,j] = (float)_canvasData[i,j].Value; 
                 }
@@ -117,6 +154,9 @@ namespace AI_Digit_Recognition
             return canvasArray;
         }
 
+        /// <summary>
+        /// Clears canvas
+        /// </summary>
         public void ClearCanvas()
         {
             for (int i = 0; i < _canvasDim; i++)
@@ -128,9 +168,15 @@ namespace AI_Digit_Recognition
             }
         }
 
+        /// <summary>
+        /// Validates that position exists and draws at specified intestity, 0 - 255 range
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="intensity"></param>
         private void ValidateDraw(int x, int y, int intensity)
         {
-            if (x >= 0 && x <= 27 && y >= 0 && y <= 27)
+            if (x >= 0 && x < _canvasDim && y >= 0 && y < _canvasDim && intensity >= 0 && intensity <=255)
             {
                 _canvasData[x, y].Value += intensity;
             }

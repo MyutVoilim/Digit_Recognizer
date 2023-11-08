@@ -42,9 +42,9 @@ namespace AI_Digit_Recognition
         /// <summary>
         /// Load Ai model from text file
         /// </summary>
-        public AIDigitModel()
+        public AIDigitModel(string AiFile)
         {
-            LoadFromFile();
+            LoadFromFile(AiFile);
         }
 
         #region Public Methods
@@ -63,6 +63,16 @@ namespace AI_Digit_Recognition
             {
                 using (StreamWriter writer = new StreamWriter(saveFileDialog.FileName))
                 {
+                    // Get hidden layer dimensions
+                    int[] hiddenLayerData = new int[_hiddenLayers.Length];
+
+                    for (int i = 0; i < _hiddenLayers.Length; i++) {
+                        hiddenLayerData[i] = _hiddenLayers[i].Length;
+                    }
+
+                    // Save hidden layer dimensions
+                    writer.WriteLine(string.Join(",", hiddenLayerData));
+                    
                     // Save input layer
                     writer.WriteLine(string.Join(",", _inputLayer));
 
@@ -70,21 +80,21 @@ namespace AI_Digit_Recognition
                     writer.WriteLine(string.Join(",", _outputLayer));
 
                     // Save hidden layers
-                    foreach (var layer in _hiddenLayers)
+                    foreach (float[] layer in _hiddenLayers)
                     {
                         writer.WriteLine(string.Join(",", layer));
                     }
 
                     // Save biases
-                    foreach (var layerBias in _bias)
+                    foreach (float[] layerBias in _bias)
                     {
                         writer.WriteLine(string.Join(",", layerBias));
                     }
 
                     // Save weights
-                    foreach (var layerWeights in _weights)
+                    foreach (float[][] layer in _weights)
                     {
-                        foreach (var nodeWeights in layerWeights)
+                        foreach (float[] nodeWeights in layer)
                         {
                             writer.WriteLine(string.Join(",", nodeWeights));
                         }
@@ -97,22 +107,32 @@ namespace AI_Digit_Recognition
         /// Loads input and hidden layers from a text file
         /// </summary>
         /// <param name="filename"></param>
-        public void LoadFromFile()
+        public void LoadFromFile(string? filePath = null)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
-            openFileDialog.Title = "Load an AI Model File";
-
-            bool? result = openFileDialog.ShowDialog();
-            if (result.HasValue && result.Value)
+            if (filePath == null)
             {
-                using (StreamReader reader = new StreamReader(openFileDialog.FileName))
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                openFileDialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+                openFileDialog.Title = "Load an AI Model File";
+
+                bool? result = openFileDialog.ShowDialog();
+                if (result.HasValue && result.Value) filePath = openFileDialog.FileName;
+            } 
+            if (filePath != null)
+            {
+                using (StreamReader reader = new StreamReader(filePath))
                 {
+                    // Load hidden layer amount
+                    int[] hiddenLayerArray = reader.ReadLine().Split(',').Select(int.Parse).ToArray();
+
                     // Load input layer
                     _inputLayer = reader.ReadLine().Split(',').Select(float.Parse).ToArray();
 
                     // Load output layer
                     _outputLayer = reader.ReadLine().Split(',').Select(float.Parse).ToArray();
+
+                    // Initalize hidden layers and biases with new dimensions
+                    InitializeHiddenLayers(hiddenLayerArray);
 
                     // Load hidden layers
                     for (int i = 0; i < _hiddenLayers.Length; i++)
@@ -121,13 +141,16 @@ namespace AI_Digit_Recognition
                     }
 
                     // Load biases
-                    for (int i = 0; i < _bias.Length; i++)
+                    for (int i = 0; i < _hiddenLayers.Length; i++)
                     {
                         _bias[i] = reader.ReadLine().Split(',').Select(float.Parse).ToArray();
                     }
 
+                    // Initalize weights with new dimensions
+                    InitializeWeights(hiddenLayerArray);
+
                     // Load weights
-                    for (int i = 0; i < _weights.Length; i++)
+                    for (int i = 0; i < _hiddenLayers.Length + 1; i++)
                     {
                         for (int j = 0; j < _weights[i].Length; j++)
                         {
@@ -139,7 +162,7 @@ namespace AI_Digit_Recognition
         }
 
         /// <summary>
-        /// 
+        /// Takes input to be proccessed by AI and returns confidence values for AI's guess
         /// </summary>
         /// <param name="inputData"></param>
         /// <returns></returns>
@@ -209,6 +232,7 @@ namespace AI_Digit_Recognition
                     string[] lines = File.ReadAllLines(openFileDialog.FileName);
                     for (int epoch = 0; epoch < epochs; epoch++)
                     {
+                        Debug.WriteLine($"On epoch {epoch}");
                         foreach (string line in lines.Skip(1)) // Skip the first line
                         {
                             string[] values = line.Split(',');
