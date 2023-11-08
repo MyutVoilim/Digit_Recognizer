@@ -14,18 +14,23 @@
             <ColumnDefinition Width="286*"/>
         </Grid.ColumnDefinitions>
         <Label x:Name="Text1" Content="1" HorizontalAlignment="Left" Margin="399,212,0,0" VerticalAlignment="Top" FontSize="22"/>
-        <Button x:Name="Button1" Content="Save AI" HorizontalAlignment="Left" Margin="43,417,0,0" VerticalAlignment="Top" Click="SaveAI" Width="130" Grid.Column="1" Height="55"/>
         <Label x:Name="Text2" Content="Text 2" HorizontalAlignment="Left" Margin="180,199,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="Train_AI_Button" Content="Start Training" HorizontalAlignment="Left" Margin="92,284,0,0" VerticalAlignment="Top" Click="TrainAI" Width="128" Height="56"/>
-        <Button x:Name="Button3" Content="Load Digit" HorizontalAlignment="Left" Margin="43,270,0,0" VerticalAlignment="Top" Click="GetNumber" Width="130" Height="56" Grid.Column="1"/>
+        <Button x:Name="Train_AI_Button" Content="Start Training" HorizontalAlignment="Left" Margin="92,284,0,0" VerticalAlignment="Top" Click="TrainAI" Width="128" Height="56" RenderTransformOrigin="0.477,0.804"/>
+        <UniformGrid Columns="1" Margin="47,268,82,50" Grid.Column="1">
+            <Button x:Name="Button1" Content="Save AI" Click="SaveAI" VerticalAlignment="Center" Margin="0,0,0,0" Width="NaN" Height="50"/>
+            <Button x:Name="Button3" Content="Load Digit" Click="GetNumber" VerticalAlignment="Center" Margin="0,0,0,0" Width="NaN" Height="50"/>
+            <Button x:Name="loadAiButton" Content="Load AI" Click="Load_AI" VerticalAlignment="Center" Margin="0,0,0,0" Width="NaN" Height="50"/>
+            <Button x:Name="clearButton" Content="Clear" Click="ClearCanvas" VerticalAlignment="Center" Margin="0,0,0,0" Width="NaN" Height="50"/>
+        </UniformGrid>
         <Canvas x:Name="fakeCanvas" Background="Black" Margin="264,268,276,50" Height="280" Width="280" MouseDown="onCanvasMouseDown" MouseMove="onCanvasMouseMove" MouseUp="onCanvasMouseUp" Grid.ColumnSpan="2"/>
-        <Button Content="Load AI" HorizontalAlignment="Left" Margin="43,353,0,0" VerticalAlignment="Top" Click="Load_AI" Height="55" Width="130" Grid.Column="1"/>
-        <Button x:Name="clearButton" Content="Clear" HorizontalAlignment="Left" Margin="43,493,0,0" VerticalAlignment="Top" Click="ClearCanvas" Grid.Column="1" Height="55" Width="130"/>
         <ScottPlot:WpfPlot x:Name="ConfidenceChart" Margin="105,0,105,368" Grid.ColumnSpan="2" />
         <Image x:Name="testImage" HorizontalAlignment="Left" Height="100" Margin="269,298,0,0" VerticalAlignment="Top" Width="100"/>
-        <TextBox x:Name="InputTextbox" HorizontalAlignment="Left" Margin="146,470,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="38" PreviewTextInput="TextboxRestrictions" KeyDown="inputEnter"/>
-        <Label x:Name="aiInputLabel" Content="Layer Amount:" HorizontalAlignment="Left" Margin="59,466,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="createAiButton" Content="Confirm" HorizontalAlignment="Left" Margin="194,469,0,0" VerticalAlignment="Top" Click="createButtonClick"/>
+        <TextBox x:Name="InputTextbox" HorizontalAlignment="Left" Margin="137,534,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="38" PreviewTextInput="TextboxRestrictions" KeyDown="inputEnter"/>
+        <Label x:Name="aiInputLabel" Content="Layer Amount:" HorizontalAlignment="Left" Margin="22,530,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.069,1.234"/>
+        <Button x:Name="createAiButton" Content="Confirm" HorizontalAlignment="Left" Margin="180,533,0,0" VerticalAlignment="Top" Click="createButtonClick"/>
+        <Button x:Name="selectTrainingButton" Content="Training File" HorizontalAlignment="Left" Margin="92,367,0,0" VerticalAlignment="Top" Click="SelectTrainingData" Height="52" Width="128"/>
+        <Label x:Name="trainingLabel" Content="Begin Training" HorizontalAlignment="Left" Margin="23,212,0,0" VerticalAlignment="Top"/>
+        <TextBlock x:Name="infoTextblock" HorizontalAlignment="Left" Margin="22,460,0,0" TextWrapping="Wrap" Text="To create a new AI model, please enter the amout of hidden layers and then the node count for each layer one by one." VerticalAlignment="Top" Width="218"/>
 
     </Grid>
 </Window>

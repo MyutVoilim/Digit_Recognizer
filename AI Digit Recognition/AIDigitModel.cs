@@ -218,21 +218,15 @@ namespace AI_Digit_Recognition
         /// <param name="csvFile"></param>
         /// <param name="learningRate"></param>
         /// <param name="epochs"></param>
-        public async Task Train(float learningRate, int epochs)
+        public async Task Train(float learningRate, int epochs, string traingingFile)
         {
             await Task.Run(() =>
             {
-                OpenFileDialog openFileDialog = new OpenFileDialog();
-                openFileDialog.Filter = "CSV Files (*.csv)|*.csv|Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
-                openFileDialog.Title = "Select a Training File";
-
-                bool? result = openFileDialog.ShowDialog();
-                if (result.HasValue && result.Value)
+                if (traingingFile != null)
                 {
-                    string[] lines = File.ReadAllLines(openFileDialog.FileName);
+                    string[] lines = File.ReadAllLines(traingingFile);
                     for (int epoch = 0; epoch < epochs; epoch++)
                     {
-                        Debug.WriteLine($"On epoch {epoch}");
                         foreach (string line in lines.Skip(1)) // Skip the first line
                         {
                             string[] values = line.Split(',');
@@ -253,9 +247,13 @@ namespace AI_Digit_Recognition
                             }
 
                             Backpropagate(targetOutput, learningRate);
-
+                            Debug.WriteLine($"On epoch {epoch}");
                         }
                     }
+                }
+                else
+                {
+                    Console.WriteLine("No File");
                 }
             });
         }

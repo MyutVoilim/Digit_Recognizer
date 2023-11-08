@@ -1,4 +1,5 @@
-﻿using ScottPlot;
+﻿using Microsoft.Win32;
+using ScottPlot;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,6 +17,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
@@ -33,15 +35,15 @@ namespace AI_Digit_Recognition
         private int[] confidenceValues = new int[10]; // Values from 0 - 9 holding the confidence values for their respective numbers
         private float learningRate = .1f; // Rate that AI adjusts internal values during training, .1f is a fairly large learning rate
         private int epochAmount = 1; // Amount of times AI iterates through entire training data during training
+        private string projectFolder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
+        private string trainingFile;
+        private int[] createAiInput;
         public MainWindow()
         {
-            var projectFolder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
-            var file = System.IO.Path.Combine(projectFolder, @"Data\train.csv");
-
+            trainingFile = System.IO.Path.Combine(projectFolder, @"Data\train.csv");
             InitializeComponent();
-            myCanvas = new CanvasFrame(fakeCanvas, 28, System.IO.Path.Combine(projectFolder, @"Data\train.csv"));
-            //digitAi = new AIDigitModel(System.IO.Path.Combine(projectFolder, @"Data\BasicAIData.txt"));
-            digitAi = new AIDigitModel(new int[2] { 16, 20});
+            myCanvas = new CanvasFrame(fakeCanvas, 28, trainingFile);
+            digitAi = new AIDigitModel(System.IO.Path.Combine(projectFolder, @"Data\AiDigitModel.txt"));
             CreateConfidenceChart();
             UpdateChart();
         }
@@ -163,20 +165,18 @@ namespace AI_Digit_Recognition
                 (sender as Button).IsEnabled = false;
 
                 // Start the training
-                await digitAi.Train(learningRate, epochAmount);
-
-                // Display a message (or do any post-training tasks)
-                MessageBox.Show("Training Completed!");
+                trainingLabel.Content = "Training...";
+                await digitAi.Train(learningRate, epochAmount, trainingFile);
             }
             catch (Exception ex)
             {
-                // Handle exceptions
                 MessageBox.Show($"An error occurred: {ex.Message}");
             }
             finally
             {
                 // Re-enable the button
                 (sender as Button).IsEnabled = true;
+                trainingLabel.Content = "Taining is Done!";
             }
         }
         
@@ -202,28 +202,101 @@ namespace AI_Digit_Recognition
         {
             return int.TryParse(text, out _);
         }
+
+        // Calls CreateAi when createAiButton is clicked
         private void createButtonClick(object sender, RoutedEventArgs e)
         {
-            CreateAi();
+            if (checkValidInput()) CreateAi(int.Parse(InputTextbox.Text));
+            InputTextbox.Clear();
         }
 
-        private void CreateAi()
+        /// <summary>
+        /// Creates a new AI model based on user inputs
+        /// </summary>
+        private void CreateAi(int input)
         {
-            aiInputLabel.Content = "This worked";
+            // Track current layer position to enter input information
+            int position = 0;
+
+            // Create createAiInput size if not created yet
+            if (createAiInput == null)
+            {
+                createAiInput = new int[input];
+                aiInputLabel.Content = "Size for layer";
+            } 
+            // Find if layer node size has not been defined and set it as input
+            else
+            {
+                for (int i = 0; i < createAiInput.Length; i++)
+                {
+                    position++;
+                    if (createAiInput[i] == 0)
+                    {
+                        createAiInput[i] = input;
+                        break;
+                    }
+                }
+            }
+            aiInputLabel.Content = $"Node # for layer {position}";
+
+            // If the last value in createAiInput is not 0 then all inputs have been entered and new AI model can be created
+            if (createAiInput[createAiInput.Length - 1] != 0)
+            {
+                digitAi = new AIDigitModel(createAiInput);
+                aiInputLabel.Content = "Ai Created!";
+                createAiInput = null;
+            }
         }
 
+        /// <summary>
+        /// Calls CreateAI when enter key is hit using intputTextbox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void inputEnter(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter) {
-                CreateAi();
+                if (checkValidInput()) CreateAi(int.Parse(InputTextbox.Text));
+                InputTextbox.Clear();
             }
+        }
+
+        /// <summary>
+        /// Selects a training file to use
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SelectTrainingData(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "CSV Files (*.csv)|*.csv|Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+            openFileDialog.Title = "Select a Training File";
+
+            bool? result = openFileDialog.ShowDialog();
+            if (result.HasValue && result.Value) trainingFile = openFileDialog.FileName;
+        }
+
+        /// <summary>
+        /// Checks to see if InputTextBox is not empty or 0
+        /// </summary>
+        /// <returns></returns>
+        private bool checkValidInput()
+        {
+            bool validInput = true;
+            if (string.IsNullOrWhiteSpace(InputTextbox.Text)) {
+                validInput = false;
+            }
+            if (int.Parse(InputTextbox.Text) == 0)
+            {
+                validInput = false;
+            }
+            return validInput;
         }
 
         //Ensure proper z-index
         //Clean up code
         //Visually make it look good
-        //Ensure that the logic for different classes interaction makes sense and is consistent eg. whether canvasDAata should be in the main rather than intialized in canvas frame
         //Make sure the the use of file is  consistent wither using the class or calling the files directly
-        //Make so that a default AI file is loaded from the project
+
     }
 }
