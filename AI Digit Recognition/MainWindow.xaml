@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:AI_Digit_Recognition"
         xmlns:oxy="http://oxyplot.org/wpf" x:Name="mainWindow" x:Class="AI_Digit_Recognition.MainWindow"
         mc:Ignorable="d"
-        Title="Digit Recognizer" Height="614" Width="820">
+        Title="Digit Recognizer" Height="614" Width="820" ResizeMode="NoResize">
     <Grid x:Name="DigitGrid" RenderTransformOrigin="0.585,0.573" Background="White">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="515*"/>
@@ -39,9 +39,14 @@
         <TextBox x:Name="InputTextbox" HorizontalAlignment="Left" TextWrapping="Wrap" Width="41" PreviewTextInput="TextboxRestrictions" KeyDown="inputEnter" Height="29" VerticalAlignment="Top" Margin="152,501,0,0" RenderTransformOrigin="0.5,0.5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TabIndex="2"/>
         <Label x:Name="aiInputLabel" Content="Layer Amount:" HorizontalAlignment="Left" RenderTransformOrigin="-0.069,1.234" Width="122" FontFamily="Georgia" FontSize="14" VerticalAlignment="Top" Margin="30,501,0,0" HorizontalContentAlignment="Right"/>
         <Button x:Name="createAiButton" Content="Confirm" HorizontalAlignment="Left" Click="createButtonClick" Background="#FFB5B5B5" Height="26" Width="62" FontFamily="Georgia" VerticalAlignment="Top" Margin="202,501,0,0" TabIndex="3"/>
-        <Label x:Name="trainingLabel" Content="Begin Training" HorizontalAlignment="Right" Margin="0,250,286,0" VerticalAlignment="Top" FontFamily="Georgia"/>
         <TextBlock x:Name="infoTextblock" HorizontalAlignment="Left" Margin="46,418,0,0" TextWrapping="Wrap" Text="To create a new AI model, please enter the amout of hidden layers and then the node count for each layer one by one." VerticalAlignment="Top" Width="218" Foreground="Black" FontFamily="Georgia" FontSize="14" Height="78"/>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="90,252,0,0" VerticalAlignment="Top" Click="TestAi"/>
+        <Button Content="Button" HorizontalAlignment="Left" Margin="25,332,0,0" VerticalAlignment="Top" Click="TestAi"/>
+        <ProgressBar x:Name="progressBar" HorizontalAlignment="Left" Height="16" Margin="10,21,0,0" VerticalAlignment="Top" Width="785" Grid.ColumnSpan="2" RenderTransformOrigin="0.5,0.44" Visibility="Hidden"/>
+        <Label x:Name="trainingLabel" Content="Begin Training" HorizontalAlignment="Right" Margin="0,238,376,0" VerticalAlignment="Top" FontFamily="Georgia"/>
+        <Label x:Name="progressLabel" Content="Start Training!" HorizontalAlignment="Left" Margin="381,16,0,0" VerticalAlignment="Top" RenderTransformOrigin="1.565,1.928" FontFamily="Georgia" Visibility="Collapsed"/>
+        <Label x:Name="accuracyLabel" Content="0%" HorizontalAlignment="Left" Margin="32,192,0,0" VerticalAlignment="Top" FontFamily="Georgia" FontSize="16" RenderTransformOrigin="-0.061,1.208" Visibility="Collapsed"/>
+        <TextBox x:Name="epochTextbox" HorizontalAlignment="Left" Margin="10,153,0,0" TextWrapping="Wrap" Text="Enter an Epoch Amount" VerticalAlignment="Top" Width="120" PreviewTextInput="TextboxRestrictions"/>
+        <Button x:Name="changeTraining" Content="Change" HorizontalAlignment="Left" Margin="30,118,0,0" VerticalAlignment="Top" Click="ChangeTrainingValues"/>
 
     </Grid>
 </Window>

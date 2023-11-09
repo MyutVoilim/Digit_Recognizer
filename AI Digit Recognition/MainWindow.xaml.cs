@@ -34,14 +34,16 @@ namespace AI_Digit_Recognition
         private AIDigitModel _digitAiModel; // Structure for AI
         private int[] _confidenceValues = new int[10]; // Values from 0 - 9 holding the confidence values for their respective numbers
         private float _learningRate = .1f; // Rate that AI adjusts internal values during training, .1f is a fairly large learning rate
-        private int _trainingEpochs = 1; // Amount of times AI iterates through entire training data during training
+        private int _trainingEpochs = 0; // Amount of times AI iterates through entire training data during training
         private string _projectFolder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName; //Get directory for project
         private string _trainingFilePath; //File to traing AI model with
         private int[] _createAiInput;
+        private FileManager _fileManager;
 
         public MainWindow()
         {
             InitializeComponent();
+            _fileManager= new FileManager();
             _trainingFilePath = System.IO.Path.Combine(_projectFolder, @"Data\train.csv");
             _mainCanvas = new CanvasFrame(digitCanvas, _trainingFilePath);
             _digitAiModel = new AIDigitModel(System.IO.Path.Combine(_projectFolder, @"Data\AiDigitModel.txt"));
@@ -130,19 +132,10 @@ namespace AI_Digit_Recognition
         /// Updates the chart to reflect new cofidence values and finds value with highest confidence
         /// </summary>
         private void UpdateChart() {
-            _confidenceValues = _digitAiModel.Predict(_mainCanvas.GetCanvasArray());
-            int maxValue = 0;
-            int predictedNumber = 0;
+            _digitAiModel.ProcessNumber(_mainCanvas.GetCanvasArray());
+            _confidenceValues = _digitAiModel.GetOutputValues();
 
-            for (int i = 0; i < 10; i++)
-            {
-                if (maxValue < _confidenceValues[i])
-                {
-                    maxValue = _confidenceValues[i];
-                    predictedNumber = i;
-                }
-            }
-            aiGuessLabel.Content = predictedNumber;
+            aiGuessLabel.Content = _digitAiModel.GetGuessedValue();
 
             ConfidenceChart.Reset();
             ConfidenceChart.Plot.AddBar(_confidenceValues.Select(i => (double) i).ToArray());
@@ -169,13 +162,27 @@ namespace AI_Digit_Recognition
         /// <param name="e"></param>
         private async void TrainAI(object sender, RoutedEventArgs e)
         {
+            // Set progress components to visible
+            progressBar.Visibility = Visibility.Visible;
+            progressLabel.Visibility= Visibility.Visible;
+
+            // Will update UI when as data is processed, runs on UI thread
+            var progress = new Progress<float[]>(percent =>
+            {
+                progressLabel.Content = $"{(int)percent[0]}% completed";
+                progressBar.Value = (int)percent[0];
+
+                // Only show percentages if epochs is 0, meaning the ai is not training just checking accuracy
+                if (_trainingEpochs == 0) accuracyLabel.Content = (int)percent[1];
+            });
+
             try
             {
                 (sender as Button).IsEnabled = false;
 
                 // Start the training
                 trainingLabel.Content = "Training...";
-                await _digitAiModel.Train(_learningRate, _trainingEpochs, _trainingFilePath);
+                await _digitAiModel.Train(_learningRate, _trainingEpochs,progress, _trainingFilePath);
             }
             catch (Exception ex)
             {
@@ -186,6 +193,13 @@ namespace AI_Digit_Recognition
                 // Re-enable the button
                 (sender as Button).IsEnabled = true;
                 trainingLabel.Content = "Taining is Done!";
+
+                // Remove visiblity of progress components
+                progressBar.Visibility = Visibility.Collapsed;
+                progressLabel.Visibility = Visibility.Collapsed;
+                progressBar.Value = 0;
+
+                if (_trainingEpochs == 0) accuracyLabel.Visibility = Visibility.Visible;
             }
         }
         
@@ -316,14 +330,29 @@ namespace AI_Digit_Recognition
             _digitAiModel.TestData(System.IO.Path.Combine(_projectFolder, @"Data\testingOutput.csv"), System.IO.Path.Combine(_projectFolder, @"Data\test.csv"));
         }
 
+        /// <summary>
+        /// Updates the epoch count based on user input
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ChangeTrainingValues(object sender, RoutedEventArgs e)
+        {
+            _trainingEpochs = int.Parse(epochTextbox.Text);
+        }
+
+
         //Clean up code
         //Make sure the the use of file is  consistent wither using the class or calling the files directly
-        //Create ability to test on training data to see accuracy
         //See about configuration files
         //Add documentation
         //Add unit testing
         //Rearage and put regions on all classes
-        //Add ability to adjust epcochs and learning rate
-        //Show updates on progress training to checking percentages
+        //Add regions and make sure thing are xml commented and spelled correctly
+        //Add trainging data that actually has the answers
+        //Add ability to stop training
+        //make IFileManager
+
+        //!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!
+        //make user filemanager is consistent through all classes
     }
 }

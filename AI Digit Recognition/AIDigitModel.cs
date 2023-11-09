@@ -5,12 +5,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Shapes;
 
 namespace AI_Digit_Recognition
 {
     internal class AIDigitModel
     {
         private static Random rand = new Random();
+        private FileManager _fileManager;
 
         private const int INPUT_SIZE = 728;  // Size of the input layer.
         private const int OUTPUT_SIZE = 10;  // Size of the output layer.
@@ -27,6 +29,7 @@ namespace AI_Digit_Recognition
         /// <param name="layerSizes">Sizes of the hidden layers.</param>
         public AIDigitModel(int[] layerSizes)
         {
+            _fileManager = new FileManager();
             InitializeHiddenLayers(layerSizes);
             InitializeWeights(layerSizes);
             InitializeRandomData();
@@ -36,122 +39,111 @@ namespace AI_Digit_Recognition
         /// <summary>
         /// Load Ai model from text file
         /// </summary>
-        public AIDigitModel(string AiFile)
+        public AIDigitModel(string aiModelFile)
         {
-            LoadFromFile(AiFile);
+            _fileManager = new FileManager();
+            LoadFromFile(aiModelFile);
         }
 
         #region Public Methods
         /// <summary>
-        /// Saves input and hidden layers to a text file
+        /// Saves AI model to txt file
         /// </summary>
-        /// <param name="filename"></param>
         public void SaveToFile()
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*"; // Filters for text files
-            saveFileDialog.Title = "Save an AI Model File";
+            // Get hidden layer dimensions
+            int[] hiddenLayerData = new int[_hiddenLayers.Length];
 
-            bool? result = saveFileDialog.ShowDialog();
-            if (result.HasValue && result.Value)
+            for (int i = 0; i < _hiddenLayers.Length; i++)
             {
-                using (StreamWriter writer = new StreamWriter(saveFileDialog.FileName))
+                hiddenLayerData[i] = _hiddenLayers[i].Length;
+            }
+
+            // Clears the current path to allow user to select a new save path
+            _fileManager.DeletePath();
+
+            // Save hidden layer dimensions
+            _fileManager.WriteToFile(hiddenLayerData);
+
+            // Save input layer
+            _fileManager.WriteToFile(_inputLayer);
+
+            // Save output layer
+            _fileManager.WriteToFile(_outputLayer);
+
+            // Save hidden layers
+            foreach (float[] layer in _hiddenLayers)
+            {
+                _fileManager.WriteToFile(layer);
+            }
+
+            // Save biases
+            foreach (float[] layerBias in _bias)
+            {
+                _fileManager.WriteToFile(layerBias);
+            }
+
+            // Save weights
+            foreach (float[][] layer in _weights)
+            {
+                foreach (float[] nodeWeights in layer)
                 {
-                    // Get hidden layer dimensions
-                    int[] hiddenLayerData = new int[_hiddenLayers.Length];
-
-                    for (int i = 0; i < _hiddenLayers.Length; i++)
-                    {
-                        hiddenLayerData[i] = _hiddenLayers[i].Length;
-                    }
-
-                    // Save hidden layer dimensions
-                    writer.WriteLine(string.Join(",", hiddenLayerData));
-
-                    // Save input layer
-                    writer.WriteLine(string.Join(",", _inputLayer));
-
-                    // Save output layer
-                    writer.WriteLine(string.Join(",", _outputLayer));
-
-                    // Save hidden layers
-                    foreach (float[] layer in _hiddenLayers)
-                    {
-                        writer.WriteLine(string.Join(",", layer));
-                    }
-
-                    // Save biases
-                    foreach (float[] layerBias in _bias)
-                    {
-                        writer.WriteLine(string.Join(",", layerBias));
-                    }
-
-                    // Save weights
-                    foreach (float[][] layer in _weights)
-                    {
-                        foreach (float[] nodeWeights in layer)
-                        {
-                            writer.WriteLine(string.Join(",", nodeWeights));
-                        }
-                    }
+                    _fileManager.WriteToFile(nodeWeights);
                 }
             }
+
         }
 
         /// <summary>
-        /// Loads input and hidden layers from a text file
+        /// Loads AI model data from file
         /// </summary>
-        /// <param name="filename"></param>
-        public void LoadFromFile(string? filePath = null)
+        public void LoadFromFile(string aiModeFileData = null)
         {
-            if (filePath == null)
-            {
-                OpenFileDialog openFileDialog = new OpenFileDialog();
-                openFileDialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
-                openFileDialog.Title = "Load an AI Model File";
+            if (aiModeFileData == null) _fileManager.SelectFile();
+            else _fileManager.DefinePath(aiModeFileData);
 
-                bool? result = openFileDialog.ShowDialog();
-                if (result.HasValue && result.Value) filePath = openFileDialog.FileName;
+            // Hold AI model data from file
+            string[] modelData = _fileManager.ReadAllLines();
+
+            // Keeps track of current line being read from file, starts at 3 since first three lines do not change
+            int currentLine = 3;
+
+            // Load hidden layer amount
+            int[] hiddenLayerArray = modelData[0].Split(",").Select(int.Parse).ToArray();
+
+            // Load input layer
+            _inputLayer = modelData[1].Split(",").Select(float.Parse).ToArray();
+
+            // Load output layer
+            _outputLayer = modelData[2].Split(",").Select(float.Parse).ToArray();
+
+            // Initalize hidden layers and biases with new dimensions
+            InitializeHiddenLayers(hiddenLayerArray);
+
+            // Load hidden layers
+            for (int i = 0; i < _hiddenLayers.Length; i++)
+            {
+                _hiddenLayers[i] = modelData[currentLine].Split(",").Select(float.Parse).ToArray();
+                currentLine++;
             }
-            if (filePath != null)
+
+            // Load biases
+            for (int i = 0; i < _hiddenLayers.Length; i++)
             {
-                using (StreamReader reader = new StreamReader(filePath))
+                _bias[i] = modelData[currentLine].Split(",").Select(float.Parse).ToArray();
+                currentLine++;
+            }
+
+            // Initalize weights with new dimensions
+            InitializeWeights(hiddenLayerArray);
+
+            // Load weights
+            for (int i = 0; i < _hiddenLayers.Length + 1; i++)
+            {
+                for (int j = 0; j < _weights[i].Length; j++)
                 {
-                    // Load hidden layer amount
-                    int[] hiddenLayerArray = reader.ReadLine().Split(',').Select(int.Parse).ToArray();
-
-                    // Load input layer
-                    _inputLayer = reader.ReadLine().Split(',').Select(float.Parse).ToArray();
-
-                    // Load output layer
-                    _outputLayer = reader.ReadLine().Split(',').Select(float.Parse).ToArray();
-
-                    // Initalize hidden layers and biases with new dimensions
-                    InitializeHiddenLayers(hiddenLayerArray);
-
-                    // Load hidden layers
-                    for (int i = 0; i < _hiddenLayers.Length; i++)
-                    {
-                        _hiddenLayers[i] = reader.ReadLine().Split(',').Select(float.Parse).ToArray();
-                    }
-
-                    // Load biases
-                    for (int i = 0; i < _hiddenLayers.Length; i++)
-                    {
-                        _bias[i] = reader.ReadLine().Split(',').Select(float.Parse).ToArray();
-                    }
-
-                    // Initalize weights with new dimensions
-                    InitializeWeights(hiddenLayerArray);
-
-                    // Load weights
-                    for (int i = 0; i < _hiddenLayers.Length + 1; i++)
-                    {
-                        for (int j = 0; j < _weights[i].Length; j++)
-                        {
-                            _weights[i][j] = reader.ReadLine().Split(',').Select(float.Parse).ToArray();
-                        }
-                    }
+                    _weights[i][j] = modelData[currentLine].Split(",").Select(float.Parse).ToArray();
+                    currentLine++;
                 }
             }
         }
@@ -161,27 +153,27 @@ namespace AI_Digit_Recognition
         /// </summary>
         /// <param name="inputData"></param>
         /// <returns></returns>
-        public int[] Predict(float[,] inputData)
+        public void ProcessNumber(float[] inputLayerData)
         {
-
-            // Convert 2D array to 1D
-            float[] inputLayerData = new float[INPUT_SIZE];
-            for (int i = 0; i < INPUT_SIZE; i++)
-            {
-                inputLayerData[i] = inputData[i % 28, i / 28];
-            }
-
+            // Move data into input layer and normalize it
             InitializeInputData(inputLayerData);
-            Normalize();
+
+            // Proccess data through neural network
             ForwardPass();
 
-            // Convert _outputLayer values to percentage with two decimal places
+        }
+
+        /// <summary>
+        /// Gets the output layer as precentages up to 100
+        /// </summary>
+        /// <returns>int[] with index corrilating to the repective number it represents e.g. index 0 = number 0</returns>
+        public int[] GetOutputValues()
+        {
             int[] percentages = new int[OUTPUT_SIZE];
             for (int i = 0; i < OUTPUT_SIZE; i++)
             {
                 percentages[i] = (int)(_outputLayer[i] * 100);
             }
-
             return percentages;
         }
 
@@ -204,6 +196,7 @@ namespace AI_Digit_Recognition
                 {
                     _inputLayer[i] = inputData[i];
                 }
+                Normalize();
             }
         }
 
@@ -213,41 +206,70 @@ namespace AI_Digit_Recognition
         /// <param name="csvFile"></param>
         /// <param name="learningRate"></param>
         /// <param name="epochs"></param>
-        public async Task Train(float learningRate, int epochs, string traingingFile)
+        public async Task Train(float learningRate, int epochs, IProgress<float[]> progress, string trainingFile = null)
         {
             await Task.Run(async () =>
             {
-                int count = 0;
-                if (traingingFile != null)
+            // Keep track of progress through training and accuracy of guesses
+            float lineCount = 0;
+            float totalLines = 0;
+            int targetNumber = 0;
+            float[] inputData;
+
+            // formatted as {lineCount, correctGuessCount}
+            float[] progressAndAccuracy = new float[2];
+
+            // Load and get training data
+            if (trainingFile != null) _fileManager.DefinePath(trainingFile);
+            else _fileManager.SelectFile();
+
+            if (trainingFile != null)
+            {
+                // Load input data
+                string[] lines = _fileManager.ReadAllLines();
+
+                // Calculate how many lines need to be processed, if 0 then only processing once
+                totalLines = lines.Length * ((epochs == 0) ? 1 : epochs);
+
+                // Begin training through entire data set unless epochs is 0, then only process data not train
+                for (int epoch = epochs == 0 ? -1 : 0; epoch < epochs; epoch++)
                 {
-                    string[] lines = File.ReadAllLines(traingingFile);
-                    for (int epoch = 0; epoch < epochs; epoch++)
+                    // Skip the first line as it contain label information
+                    foreach (string line in lines.Skip(1))
                     {
-                        foreach (string line in lines.Skip(1)) // Skip the first line
+                        // Format data in float[]
+                        inputData = line.Split(",").Select(float.Parse).ToArray();
+
+                        // First number is the target number
+                        targetNumber = (int)inputData[0];
+
+                        // Process the input data 
+                        ProcessNumber(inputData.Skip(1).ToArray());
+
+                        // Backpropagate to correct for errors, if epoch is 0 then only process data
+                        if (epochs > 0)
                         {
-                            string[] values = line.Split(',');
-                            int targetNumber = int.Parse(values[0]); // First number is the target number
-                            for (int i = 0; i < INPUT_SIZE; i++)
-                            {
-                                _inputLayer[i] = int.Parse(values[i + 1]);
-                            }
-
-                            Normalize();
-                            ForwardPass();
-
-                            //Transforms the target number in the format used in the backpropagation
-                            float[] targetOutput = new float[OUTPUT_SIZE];
-                            for (int i = 0; i < OUTPUT_SIZE; i++)
-                            {
-                                targetOutput[i] = (i == targetNumber) ? 1.0f : 0.0f;
-                            }
-
-                            await BackpropagateAsync(targetOutput, learningRate);
-                            count++;
-                            if (count % 1000 == 0) Debug.WriteLine(count);
+                            await BackpropagateAsync(targetNumber, learningRate);
                         }
-                        //Debug.WriteLine($"On epoch {epoch}");
+                        else
+                        {
+                            if (GetGuessedValue() == targetNumber) progressAndAccuracy[1]++;
+                        }
+
+
+                        // Iterate progress count and periodically update UI
+                        lineCount++;
+                        if (lineCount % 100 == 0)
+                        {
+                            progressAndAccuracy[0] = (lineCount / totalLines) * 100;
+                            progress?.Report(progressAndAccuracy);
+                        }
                     }
+
+                    progressAndAccuracy[1] = (progressAndAccuracy[1] / totalLines) * 100;
+                    progress?.Report(progressAndAccuracy);
+                    }
+
                 }
                 else
                 {
@@ -256,48 +278,107 @@ namespace AI_Digit_Recognition
             });
         }
 
-        public void TestData(string writeToFile, string readFromFile)
+        /*public async Task TestOnTrainingData(string trainingFile = null, IProgress<int> progress)
         {
-            int line = 1;
-            string[] rawData;
-            int[] number;
-            float[,] formattedData = new float[28, 28];
-            int[] values;
-            int maxValue = 0;
-            int predictedNumber = 0;
-            using (StreamReader reader = new StreamReader(readFromFile))
+            await Task.Run(() =>
             {
-                rawData = File.ReadAllLines(readFromFile);
-            }
-            using (StreamWriter writer = new StreamWriter(writeToFile))
-            {
-                writer.WriteLine("ImageId,Label");
-                foreach (string lines in rawData.Skip(1))
+                // Keep track of progress and accuracy
+                float progressCount = 0;
+                float totalLines = 0;
+                float numberCorrect = 0;
+                int targetNumber = 0;
+                float[] inputData;
+
+                // Load and get training data
+                if (trainingFile != null) _fileManager.DefinePath(trainingFile);
+                else _fileManager.SelectFile();
+
+                // Load input Data from file
+                string[] lines = _fileManager.ReadAllLines();
+                totalLines= lines.Length;
+
+                foreach (string line in lines)
                 {
-                    string[] stuff = lines.Split(',');
-                    for (int i = 0; i < stuff.Length; i++)
-                    {
-                        formattedData[i % 28, i / 28] = float.Parse(stuff[i]);
-                    }
-                    values = Predict(formattedData);
-                    for (int i = 0; i < 10; i++)
-                    {
-                        if (maxValue < values[i])
-                        {
-                            maxValue = values[i];
-                            predictedNumber = i;
-                        }
-                    }
-                    writer.WriteLine(line + "," + predictedNumber);
-                    line++;
-                    if (line % 1000 == 0) Debug.WriteLine(line);
-                    maxValue = 0;
-                    predictedNumber = 0;
+                    // Format data into float[]
+                    inputData = line.Split(",").Select(float.Parse).ToArray();
+
+                    // First number is the target number
+                    targetNumber = (int)inputData[0];
+
+                    // Process the input data 
+                    ProcessNumber(inputData.Skip(1).ToArray());
                 }
+
+            });
+        }*/
+
+        /// <summary>
+        /// Uses a test file to test how accurate AI model is to fresh data
+        /// </summary>
+        /// <param name="writeToFile">file to answers to</param>
+        /// <param name="readFromFile">test data</param>
+        public void TestData(string writeToFile = null, string readFromFile = null)
+        {
+            int count = 0;
+            // Set file path to test data or select a file with test data
+            if (readFromFile != null) _fileManager.DefinePath(readFromFile);
+            else _fileManager.SelectFile();
+
+
+            // Extract input data from file
+            string[] inputData = _fileManager.ReadAllLines();
+
+            // Set save path to writeToFile or select a file to write to
+            if (writeToFile != null) _fileManager.DefinePath(writeToFile);
+            else _fileManager.SelectSaveFile();
+
+            // Clear file to fresh data
+            _fileManager.ClearFile();
+
+            // Loop through inputs and process it through the network
+            for (int lineCount = 1; lineCount < inputData.Length; lineCount++)
+            {
+                ProcessNumber(inputData[lineCount].Split(",").Select(float.Parse).ToArray());
+
+                // Write current line and guessed answer onto file
+                _fileManager.WriteToFile(new int[2] { lineCount, GetGuessedValue() });
+                count++;
+                if (count % 100== 0) Debug.WriteLine(count);
             }
         }
         #endregion
-        #region Intialization Methods
+        #region Intialization Method and Utility
+        /// <summary>
+        /// Normaize input data to be within useful range of activation function
+        /// </summary>
+        private void Normalize()
+        {
+            for (int i = 0; i < _inputLayer.Length; i++)
+            {
+                _inputLayer[i] /= 255.0f;
+            }
+        }
+
+        /// <summary>
+        /// Gets what number has the highest confidence value from the output layer
+        /// </summary>
+        /// <returns>Number with highest confidence</returns>
+        public int GetGuessedValue()
+        {
+            float maxValue = 0;
+            int currentHighestPosition = 0;
+            for (int i = 0; i < _outputLayer.Length; i++)
+            {
+                if (maxValue < _outputLayer[i])
+                {
+                    maxValue = _outputLayer[i];
+                    currentHighestPosition= i;
+                }
+            }
+
+            return currentHighestPosition;
+        }
+
         /// <summary>
         /// Initializes the hidden layers and bias based on the provided sizes.
         /// </summary>
@@ -383,6 +464,24 @@ namespace AI_Digit_Recognition
         /// 
         #endregion
         #region Computation Methods
+
+        /// <summary>
+        /// Does a forward pass of the neural network from input layer to output layer
+        /// </summary>
+        private void ForwardPass()
+        {
+            // Computes layer values after apply weights and biases except for output layer
+            float[] previousLayerOutput = _inputLayer;
+            for (int layer = 0; layer < _hiddenLayers.Length; layer++)
+            {
+                _hiddenLayers[layer] = ComputeLayerOutput(previousLayerOutput, _weights[layer], _bias[layer]);
+                previousLayerOutput = _hiddenLayers[layer];
+            }
+
+            // Computs output layer which will not use any bias
+            _outputLayer = ComputeLayerOutput(previousLayerOutput, _weights[_weights.Length - 1], new float[10]);
+        }
+
         private float[] ComputeLayerOutput(float[] inputs, float[][] weights, float[] biases)
         {
             float[] outputs = new float[biases.Length];
@@ -410,8 +509,15 @@ namespace AI_Digit_Recognition
         /// </summary>
         /// <param name="targetOutput"></param>
         /// <param name="learningRate"></param>
-        private async Task BackpropagateAsync(float[] targetOutput, float learningRate)
+        private async Task BackpropagateAsync(int targetNumber, float learningRate)
         {
+            //Transforms the target number in the format used in the backpropagation
+            float[] targetOutput = new float[OUTPUT_SIZE];
+            for (int i = 0; i < OUTPUT_SIZE; i++)
+            {
+                targetOutput[i] = (i == targetNumber) ? 1.0f : 0.0f;
+            }
+
             int hiddenLayerLength = _hiddenLayers.Length;
 
             // Compute the output error in parallel
@@ -554,36 +660,6 @@ namespace AI_Digit_Recognition
         {
             return sigmoidOutput * (1 - sigmoidOutput);
         }
-
-        /// <summary>
-        /// Normaize input data to be within useful range of activation function
-        /// </summary>
-        private void Normalize()
-        {
-            for (int i = 0; i < _inputLayer.Length; i++)
-            {
-                _inputLayer[i] /= 255.0f;
-            }
-        }
-
-        /// <summary>
-        /// Does a forward pass of the neural network from input layer to output layer
-        /// </summary>
-        private void ForwardPass()
-        {
-            // Computes layer values after apply weights and biases except for output layer
-            float[] previousLayerOutput = _inputLayer;
-            for (int layer = 0; layer < _hiddenLayers.Length; layer++)
-            {
-                _hiddenLayers[layer] = ComputeLayerOutput(previousLayerOutput, _weights[layer], _bias[layer]);
-                previousLayerOutput = _hiddenLayers[layer];
-            }
-
-            // Computs output layer which will not use any bias
-            _outputLayer = ComputeLayerOutput(previousLayerOutput, _weights[_weights.Length - 1], new float[10]);
-        }
-
-
     }
     #endregion
 

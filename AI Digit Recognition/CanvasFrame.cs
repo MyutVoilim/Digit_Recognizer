@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Diagnostics;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Shapes;
 
@@ -136,20 +137,12 @@ namespace AI_Digit_Recognition
         }
 
         /// <summary>
-        /// Gets the canvasData as a int[,] array
+        /// Gets the canvasData as a float[] array
         /// </summary>
-        /// <returns></returns>
-        public float[,] GetCanvasArray()
+        /// <returns>float[]</returns>
+        public float[] GetCanvasArray()
         {
-            float[,] canvasArray = new float[28, 28];
-            for (int i = 0; i < _canvasDim; i++)
-            {
-                for (int j = 0; j < _canvasDim; j++)
-                {
-                    canvasArray[i, j] = (float)_canvasData[i, j].Value;
-                }
-            }
-            return canvasArray;
+            return formattData(_canvasData);
         }
 
         /// <summary>
@@ -178,6 +171,22 @@ namespace AI_Digit_Recognition
             {
                 _canvasData[x, y].Value += intensity;
             }
+        }
+
+        /// <summary>
+        /// Converts CanvasData of int[,] into float[]
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        private float[] formattData(CanvasData[,] data)
+        {
+            // Total points of data on square grid is CanvasDim^2
+            float[] processedData = new float[CanvasDim * CanvasDim];
+            for (int i = 0; i < CanvasDim * CanvasDim; i++)
+            {
+                processedData[i] = data[i % 28, i / 28].Value;
+            }
+            return processedData;
         }
     }
 }
