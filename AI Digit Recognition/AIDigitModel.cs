@@ -4,13 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Automation.Provider;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Navigation;
-using System.Windows.Threading;
 
 namespace AI_Digit_Recognition
 {
@@ -66,13 +60,14 @@ namespace AI_Digit_Recognition
                     // Get hidden layer dimensions
                     int[] hiddenLayerData = new int[_hiddenLayers.Length];
 
-                    for (int i = 0; i < _hiddenLayers.Length; i++) {
+                    for (int i = 0; i < _hiddenLayers.Length; i++)
+                    {
                         hiddenLayerData[i] = _hiddenLayers[i].Length;
                     }
 
                     // Save hidden layer dimensions
                     writer.WriteLine(string.Join(",", hiddenLayerData));
-                    
+
                     // Save input layer
                     writer.WriteLine(string.Join(",", _inputLayer));
 
@@ -117,7 +112,7 @@ namespace AI_Digit_Recognition
 
                 bool? result = openFileDialog.ShowDialog();
                 if (result.HasValue && result.Value) filePath = openFileDialog.FileName;
-            } 
+            }
             if (filePath != null)
             {
                 using (StreamReader reader = new StreamReader(filePath))
@@ -220,8 +215,9 @@ namespace AI_Digit_Recognition
         /// <param name="epochs"></param>
         public async Task Train(float learningRate, int epochs, string traingingFile)
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
+                int count = 0;
                 if (traingingFile != null)
                 {
                     string[] lines = File.ReadAllLines(traingingFile);
@@ -246,9 +242,11 @@ namespace AI_Digit_Recognition
                                 targetOutput[i] = (i == targetNumber) ? 1.0f : 0.0f;
                             }
 
-                            Backpropagate(targetOutput, learningRate);
-                            Debug.WriteLine($"On epoch {epoch}");
+                            await BackpropagateAsync(targetOutput, learningRate);
+                            count++;
+                            if (count % 1000 == 0) Debug.WriteLine(count);
                         }
+                        //Debug.WriteLine($"On epoch {epoch}");
                     }
                 }
                 else
@@ -256,6 +254,47 @@ namespace AI_Digit_Recognition
                     Console.WriteLine("No File");
                 }
             });
+        }
+
+        public void TestData(string writeToFile, string readFromFile)
+        {
+            int line = 1;
+            string[] rawData;
+            int[] number;
+            float[,] formattedData = new float[28, 28];
+            int[] values;
+            int maxValue = 0;
+            int predictedNumber = 0;
+            using (StreamReader reader = new StreamReader(readFromFile))
+            {
+                rawData = File.ReadAllLines(readFromFile);
+            }
+            using (StreamWriter writer = new StreamWriter(writeToFile))
+            {
+                writer.WriteLine("ImageId,Label");
+                foreach (string lines in rawData.Skip(1))
+                {
+                    string[] stuff = lines.Split(',');
+                    for (int i = 0; i < stuff.Length; i++)
+                    {
+                        formattedData[i % 28, i / 28] = float.Parse(stuff[i]);
+                    }
+                    values = Predict(formattedData);
+                    for (int i = 0; i < 10; i++)
+                    {
+                        if (maxValue < values[i])
+                        {
+                            maxValue = values[i];
+                            predictedNumber = i;
+                        }
+                    }
+                    writer.WriteLine(line + "," + predictedNumber);
+                    line++;
+                    if (line % 1000 == 0) Debug.WriteLine(line);
+                    maxValue = 0;
+                    predictedNumber = 0;
+                }
+            }
         }
         #endregion
         #region Intialization Methods
@@ -346,70 +385,91 @@ namespace AI_Digit_Recognition
         #region Computation Methods
         private float[] ComputeLayerOutput(float[] inputs, float[][] weights, float[] biases)
         {
-            float[] outputs = new float[weights[0].Length];
-            for (int i = 0; i < weights[0].Length; i++)
+            float[] outputs = new float[biases.Length];
+
+            Parallel.For(0, outputs.Length, i =>
             {
-                outputs[i] = 0;
-                
                 // Multiplies the weights
                 for (int j = 0; j < inputs.Length; j++)
                 {
                     outputs[i] += inputs[j] * weights[j][i];
                 }
 
-                //Add the bias
+                // Add the bias
                 outputs[i] += biases[i];
 
-                //Pass through activation function
+                // Pass through activation function
                 outputs[i] = Sigmoid(outputs[i]);
-            }
+            });
+
             return outputs;
         }
 
         /// <summary>
-        /// Correct data via backpropagation
+        /// Correct data via backpropagation based on learning rate and calculated error
         /// </summary>
         /// <param name="targetOutput"></param>
         /// <param name="learningRate"></param>
-        private void Backpropagate(float[] targetOutput, float learningRate)
+        private async Task BackpropagateAsync(float[] targetOutput, float learningRate)
         {
             int hiddenLayerLength = _hiddenLayers.Length;
 
-            // Compute the output error
+            // Compute the output error in parallel
             float[] outputError = new float[_outputLayer.Length];
             for (int i = 0; i < _outputLayer.Length; i++)
             {
                 outputError[i] = (targetOutput[i] - _outputLayer[i]) * SigmoidDerivative(_outputLayer[i]);
             }
 
-            //Compute the hidden layer errors, starting from the last hidden layer
+
+            // Compute the hidden layer errors, starting from the last hidden layer
             float[][] hiddenErrors = new float[hiddenLayerLength][];
             for (int layer = hiddenLayerLength - 1; layer >= 0; layer--)
             {
                 hiddenErrors[layer] = new float[_hiddenLayers[layer].Length];
-                for (int node = 0; node < _hiddenLayers[layer].Length; node++)
+
+                Parallel.For(0, _hiddenLayers[layer].Length, node =>
                 {
                     float error = 0;
 
-                    // If it's the last hidden layer, compute error relative to output layer
-                    if (layer == hiddenLayerLength - 1)
+                    // Compute error relative to the next hidden layer
+                    if (layer != hiddenLayerLength - 1)
                     {
-                        for (int i = 0; i < _outputLayer.Length; i++)
+                        for (int k = 0; k < _hiddenLayers[layer + 1].Length; k++)
                         {
-                            error += _weights[layer + 1][node][i] * outputError[i];
+                            error += _weights[layer + 1][node][k] * hiddenErrors[layer + 1][k];
                         }
                     }
-                    else // Compute error relative to the next hidden layer
+                    else // If it's the last hidden layer, compute error relative to output layer
                     {
-                        for (int i = 0; i < _hiddenLayers[layer + 1].Length; i++)
+                        for (int k = 0; k < _outputLayer.Length; k++)
                         {
-                            error += _weights[layer + 1][node][i] * hiddenErrors[layer + 1][i];
+                            error += _weights[layer + 1][node][k] * outputError[k];
                         }
                     }
                     hiddenErrors[layer][node] = error * SigmoidDerivative(_hiddenLayers[layer][node]);
-                }
+                });
             }
 
+            // Define tasks to run
+            var tasks = new List<Task> {
+            Task.Run(() => UpdateInputLayerWeights(learningRate, hiddenErrors)),
+            Task.Run(() => UpdateHiddenLayerWeights(learningRate, hiddenErrors, hiddenLayerLength)),
+            Task.Run(() => UpdateOutputLayerWeights(learningRate, outputError, hiddenLayerLength)),
+            Task.Run(() => UpdateBiases(learningRate, hiddenErrors))
+            };
+
+            // Wait for all the tasks to complete
+            await Task.WhenAll(tasks);
+        }
+
+        /// <summary>
+        /// Updates the input layers weights based on learning rate and error
+        /// </summary>
+        /// <param name="learningRate"></param>
+        /// <param name="hiddenErrors"></param>
+        private void UpdateInputLayerWeights(float learningRate, float[][] hiddenErrors)
+        {
             // Update weights and biases starting input layers connection to first hidden layer
             for (int i = 0; i < _inputLayer.Length; i++)
             {
@@ -418,7 +478,16 @@ namespace AI_Digit_Recognition
                     _weights[0][i][j] += learningRate * hiddenErrors[0][j] * _inputLayer[i];
                 }
             }
+        }
 
+        /// <summary>
+        /// Updates hidden layer weights based on learning rate and error
+        /// </summary>
+        /// <param name="learningRate"></param>
+        /// <param name="hiddenErrors"></param>
+        /// <param name="hiddenLayerLength"></param>
+        private void UpdateHiddenLayerWeights(float learningRate, float[][] hiddenErrors, int hiddenLayerLength)
+        {
             // Update weights for rest of hidden layers
             for (int layer = 0; layer < hiddenLayerLength - 1; layer++)
             {
@@ -430,16 +499,33 @@ namespace AI_Digit_Recognition
                     }
                 }
             }
+        }
 
+        /// <summary>
+        /// Updates output layers weights based on learning rate and error
+        /// </summary>
+        /// <param name="learningRate"></param>
+        /// <param name="outputError"></param>
+        /// <param name="hiddenLayerLength"></param>
+        private void UpdateOutputLayerWeights(float learningRate, float[] outputError, int hiddenLayerLength)
+        {
             // Update weights from last hidden layer to output
             for (int i = 0; i < _hiddenLayers[hiddenLayerLength - 1].Length; i++)
             {
                 for (int j = 0; j < _outputLayer.Length; j++)
                 {
-                    _weights[_hiddenLayers.Length][i][j] += learningRate * outputError[j] * _hiddenLayers[_hiddenLayers.Length - 1][i];
+                    _weights[hiddenLayerLength][i][j] += learningRate * outputError[j] * _hiddenLayers[hiddenLayerLength - 1][i];
                 }
             }
+        }
 
+        /// <summary>
+        /// Updates biases based on learning rate and error
+        /// </summary>
+        /// <param name="learningRate"></param>
+        /// <param name="hiddenErrors"></param>
+        private void UpdateBiases(float learningRate, float[][] hiddenErrors)
+        {
             // Update biases
             for (int layer = 0; layer < _hiddenLayers.Length; layer++)
             {
@@ -449,7 +535,6 @@ namespace AI_Digit_Recognition
                 }
             }
         }
-
         /// <summary>
         /// Activation function sigmoid, Idealy values shou.d be within -5 to 5
         /// </summary>
@@ -486,6 +571,7 @@ namespace AI_Digit_Recognition
         /// </summary>
         private void ForwardPass()
         {
+            // Computes layer values after apply weights and biases except for output layer
             float[] previousLayerOutput = _inputLayer;
             for (int layer = 0; layer < _hiddenLayers.Length; layer++)
             {
@@ -493,8 +579,10 @@ namespace AI_Digit_Recognition
                 previousLayerOutput = _hiddenLayers[layer];
             }
 
-            _outputLayer = ComputeLayerOutput(previousLayerOutput, _weights[_weights.Length - 1], _bias[_bias.Length - 1]);
+            // Computs output layer which will not use any bias
+            _outputLayer = ComputeLayerOutput(previousLayerOutput, _weights[_weights.Length - 1], new float[10]);
         }
+
 
     }
     #endregion

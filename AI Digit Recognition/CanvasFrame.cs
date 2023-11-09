@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Media;
 using System.Windows.Shapes;
 
 namespace AI_Digit_Recognition
@@ -25,12 +17,15 @@ namespace AI_Digit_Recognition
         private int _blockSize;
 
         // Constants for drawing intensities
-        private const int MaxIntensity = 255;
-        private const int MidIntensity = 50;
-        private const int LowIntensity = 25;
+        private const int MaxIntensity = 150;
+        private const int MidIntensity = 40;
+        private const int LowIntensity = 20;
+
+        // Constant for canvas dimensions
+        private const int CanvasDim = 28;
 
         //Default with value of 0 for grid of 28 x 28
-        public CanvasFrame(Canvas digitCanvas, int CanvasDim, string file)
+        public CanvasFrame(Canvas digitCanvas, string file)
         {
             _canvasData = new CanvasData[CanvasDim, CanvasDim];
             _digitCanvas = digitCanvas;
@@ -98,7 +93,7 @@ namespace AI_Digit_Recognition
         /// <summary>
         /// Grabs a line of data from training data cvs
         /// </summary>
-        public void LoadLine() 
+        public void LoadLine()
         {
             _dataFile.ReadFileLine(_canvasData);
 
@@ -134,7 +129,10 @@ namespace AI_Digit_Recognition
         /// <param name="value"></param>
         public void SetValueAt(int row, int col, int value)
         {
-            _canvasData[row,col].Value = value;
+            if (value >= 0 && value <= 255)
+            {
+                _canvasData[row, col].Value = value;
+            }
         }
 
         /// <summary>
@@ -143,12 +141,12 @@ namespace AI_Digit_Recognition
         /// <returns></returns>
         public float[,] GetCanvasArray()
         {
-            float[,] canvasArray = new float[28,28];
+            float[,] canvasArray = new float[28, 28];
             for (int i = 0; i < _canvasDim; i++)
             {
                 for (int j = 0; j < _canvasDim; j++)
                 {
-                    canvasArray[i,j] = (float)_canvasData[i,j].Value; 
+                    canvasArray[i, j] = (float)_canvasData[i, j].Value;
                 }
             }
             return canvasArray;
@@ -176,7 +174,7 @@ namespace AI_Digit_Recognition
         /// <param name="intensity"></param>
         private void ValidateDraw(int x, int y, int intensity)
         {
-            if (x >= 0 && x < _canvasDim && y >= 0 && y < _canvasDim && intensity >= 0 && intensity <=255)
+            if (x >= 0 && x < _canvasDim && y >= 0 && y < _canvasDim && intensity >= 0 && intensity <= 255)
             {
                 _canvasData[x, y].Value += intensity;
             }

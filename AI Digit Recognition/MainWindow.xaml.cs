@@ -29,33 +29,34 @@ namespace AI_Digit_Recognition
     /// </summary>
     public partial class MainWindow : Window
     {
-        private CanvasFrame myCanvas; // Data for the canvas that also has internal data for data binding !!!!!!!!!!!
-        private bool isDrawing = false; // Determine when user is drawing on canvas
-        private AIDigitModel digitAi; // Structure for AI
-        private int[] confidenceValues = new int[10]; // Values from 0 - 9 holding the confidence values for their respective numbers
-        private float learningRate = .1f; // Rate that AI adjusts internal values during training, .1f is a fairly large learning rate
-        private int epochAmount = 1; // Amount of times AI iterates through entire training data during training
-        private string projectFolder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
-        private string trainingFile;
-        private int[] createAiInput;
+        private CanvasFrame _mainCanvas; // Data for the canvas that also has internal data for data binding
+        private bool _isDrawing = false; // Determine when user is drawing on canvas
+        private AIDigitModel _digitAiModel; // Structure for AI
+        private int[] _confidenceValues = new int[10]; // Values from 0 - 9 holding the confidence values for their respective numbers
+        private float _learningRate = .1f; // Rate that AI adjusts internal values during training, .1f is a fairly large learning rate
+        private int _trainingEpochs = 1; // Amount of times AI iterates through entire training data during training
+        private string _projectFolder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName; //Get directory for project
+        private string _trainingFilePath; //File to traing AI model with
+        private int[] _createAiInput;
+
         public MainWindow()
         {
-            trainingFile = System.IO.Path.Combine(projectFolder, @"Data\train.csv");
             InitializeComponent();
-            myCanvas = new CanvasFrame(fakeCanvas, 28, trainingFile);
-            digitAi = new AIDigitModel(System.IO.Path.Combine(projectFolder, @"Data\AiDigitModel.txt"));
+            _trainingFilePath = System.IO.Path.Combine(_projectFolder, @"Data\train.csv");
+            _mainCanvas = new CanvasFrame(digitCanvas, _trainingFilePath);
+            _digitAiModel = new AIDigitModel(System.IO.Path.Combine(_projectFolder, @"Data\AiDigitModel.txt"));
             CreateConfidenceChart();
             UpdateChart();
         }
 
         /// <summary>
-        /// Gets a number from training cvs file
+        /// Loads number onto canvas from CSV file
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void GetNumber(object sender, RoutedEventArgs e)
         {
-            myCanvas.LoadLine();
+            _mainCanvas.LoadLine();
             UpdateChart();
  
         }
@@ -67,8 +68,9 @@ namespace AI_Digit_Recognition
         /// <param name="e"></param>
         private void onCanvasMouseDown(object sender, MouseButtonEventArgs e)
         {
-            isDrawing = true;
-            myCanvas.DrawOnGrid((int) e.GetPosition(myCanvas.Canvas).X, (int)e.GetPosition(myCanvas.Canvas).Y);
+            _isDrawing = true;
+            _mainCanvas.DrawOnGrid((int) e.GetPosition(_mainCanvas.Canvas).X, (int)e.GetPosition(_mainCanvas.Canvas).Y);
+            UpdateChart();
         }
 
         /// <summary>
@@ -78,8 +80,10 @@ namespace AI_Digit_Recognition
         /// <param name="e"></param>
         private void onCanvasMouseMove(object sender, MouseEventArgs e)
         {
-            if (isDrawing) { myCanvas.DrawOnGrid((int)e.GetPosition(myCanvas.Canvas).X, (int)e.GetPosition(myCanvas.Canvas).Y); }
-            UpdateChart();
+            if (_isDrawing) { 
+                _mainCanvas.DrawOnGrid((int)e.GetPosition(_mainCanvas.Canvas).X, (int)e.GetPosition(_mainCanvas.Canvas).Y);
+                UpdateChart();
+            }
         }
 
         /// <summary>
@@ -89,7 +93,7 @@ namespace AI_Digit_Recognition
         /// <param name="e"></param>
         private void onCanvasMouseUp(object sender, MouseButtonEventArgs e)
         {
-            isDrawing = false;
+            _isDrawing = false;
         }
 
         /// <summary>
@@ -99,7 +103,7 @@ namespace AI_Digit_Recognition
         /// <param name="e"></param>
         private void Load_AI(object sender, RoutedEventArgs e)
         {
-            digitAi.LoadFromFile();
+            _digitAiModel.LoadFromFile();
         }
 
         /// <summary>
@@ -109,7 +113,7 @@ namespace AI_Digit_Recognition
         /// <param name="e"></param>
         private void SaveAI(object sender, RoutedEventArgs e)
         {
-            digitAi.SaveToFile();
+            _digitAiModel.SaveToFile();
         }
 
         /// <summary>
@@ -119,24 +123,29 @@ namespace AI_Digit_Recognition
         /// <param name="e"></param>
         private void ClearCanvas(object sender, RoutedEventArgs e)
         {
-            myCanvas.ClearCanvas();
+            _mainCanvas.ClearCanvas();
         }
 
         /// <summary>
         /// Updates the chart to reflect new cofidence values and finds value with highest confidence
         /// </summary>
         private void UpdateChart() {
-            confidenceValues = digitAi.Predict(myCanvas.GetCanvasArray());
+            _confidenceValues = _digitAiModel.Predict(_mainCanvas.GetCanvasArray());
             int maxValue = 0;
+            int predictedNumber = 0;
 
             for (int i = 0; i < 10; i++)
             {
-                if (maxValue < confidenceValues[i]) maxValue = i;
+                if (maxValue < _confidenceValues[i])
+                {
+                    maxValue = _confidenceValues[i];
+                    predictedNumber = i;
+                }
             }
-            Text1.Content = maxValue;
+            aiGuessLabel.Content = predictedNumber;
 
             ConfidenceChart.Reset();
-            ConfidenceChart.Plot.AddBar(confidenceValues.Select(i => (double) i).ToArray());
+            ConfidenceChart.Plot.AddBar(_confidenceValues.Select(i => (double) i).ToArray());
             ConfidenceChart.Refresh();
         }
 
@@ -147,7 +156,7 @@ namespace AI_Digit_Recognition
         {
             string[] labels = { "0", "1","2","3","4","5","6","7","8","9"};
             double[] positions = {0, 1, 2, 3, 4, 6, 7, 8, 9, 10};
-            ConfidenceChart.Plot.AddBar(confidenceValues.Select(i => (double)i).ToArray(), positions);
+            ConfidenceChart.Plot.AddBar(_confidenceValues.Select(i => (double)i).ToArray(), positions);
             ConfidenceChart.Plot.XTicks(positions, labels);
             ConfidenceChart.Plot.SetAxisLimits(yMin: 0);
 
@@ -166,7 +175,7 @@ namespace AI_Digit_Recognition
 
                 // Start the training
                 trainingLabel.Content = "Training...";
-                await digitAi.Train(learningRate, epochAmount, trainingFile);
+                await _digitAiModel.Train(_learningRate, _trainingEpochs, _trainingFilePath);
             }
             catch (Exception ex)
             {
@@ -203,7 +212,11 @@ namespace AI_Digit_Recognition
             return int.TryParse(text, out _);
         }
 
-        // Calls CreateAi when createAiButton is clicked
+        /// <summary>
+        /// Calls CreateAi with valid inputs when createButton is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void createButtonClick(object sender, RoutedEventArgs e)
         {
             if (checkValidInput()) CreateAi(int.Parse(InputTextbox.Text));
@@ -219,20 +232,20 @@ namespace AI_Digit_Recognition
             int position = 0;
 
             // Create createAiInput size if not created yet
-            if (createAiInput == null)
+            if (_createAiInput == null)
             {
-                createAiInput = new int[input];
+                _createAiInput = new int[input];
                 aiInputLabel.Content = "Size for layer";
             } 
             // Find if layer node size has not been defined and set it as input
             else
             {
-                for (int i = 0; i < createAiInput.Length; i++)
+                for (int i = 0; i < _createAiInput.Length; i++)
                 {
                     position++;
-                    if (createAiInput[i] == 0)
+                    if (_createAiInput[i] == 0)
                     {
-                        createAiInput[i] = input;
+                        _createAiInput[i] = input;
                         break;
                     }
                 }
@@ -240,11 +253,11 @@ namespace AI_Digit_Recognition
             aiInputLabel.Content = $"Node # for layer {position}";
 
             // If the last value in createAiInput is not 0 then all inputs have been entered and new AI model can be created
-            if (createAiInput[createAiInput.Length - 1] != 0)
+            if (_createAiInput[_createAiInput.Length - 1] != 0)
             {
-                digitAi = new AIDigitModel(createAiInput);
+                _digitAiModel = new AIDigitModel(_createAiInput);
                 aiInputLabel.Content = "Ai Created!";
-                createAiInput = null;
+                _createAiInput = null;
             }
         }
 
@@ -273,7 +286,7 @@ namespace AI_Digit_Recognition
             openFileDialog.Title = "Select a Training File";
 
             bool? result = openFileDialog.ShowDialog();
-            if (result.HasValue && result.Value) trainingFile = openFileDialog.FileName;
+            if (result.HasValue && result.Value) _trainingFilePath = openFileDialog.FileName;
         }
 
         /// <summary>
@@ -293,10 +306,24 @@ namespace AI_Digit_Recognition
             return validInput;
         }
 
-        //Ensure proper z-index
-        //Clean up code
-        //Visually make it look good
-        //Make sure the the use of file is  consistent wither using the class or calling the files directly
+        /// <summary>
+        /// Tests current AI model against new test data
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TestAi(object sender, RoutedEventArgs e)
+        {
+            _digitAiModel.TestData(System.IO.Path.Combine(_projectFolder, @"Data\testingOutput.csv"), System.IO.Path.Combine(_projectFolder, @"Data\test.csv"));
+        }
 
+        //Clean up code
+        //Make sure the the use of file is  consistent wither using the class or calling the files directly
+        //Create ability to test on training data to see accuracy
+        //See about configuration files
+        //Add documentation
+        //Add unit testing
+        //Rearage and put regions on all classes
+        //Add ability to adjust epcochs and learning rate
+        //Show updates on progress training to checking percentages
     }
 }

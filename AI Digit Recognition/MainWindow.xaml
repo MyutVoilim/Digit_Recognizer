@@ -7,30 +7,41 @@
         xmlns:local="clr-namespace:AI_Digit_Recognition"
         xmlns:oxy="http://oxyplot.org/wpf" x:Name="mainWindow" x:Class="AI_Digit_Recognition.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="614" Width="820">
-    <Grid x:Name="DigitGrid" RenderTransformOrigin="0.585,0.573">
+        Title="Digit Recognizer" Height="614" Width="820">
+    <Grid x:Name="DigitGrid" RenderTransformOrigin="0.585,0.573" Background="White">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="515*"/>
             <ColumnDefinition Width="286*"/>
         </Grid.ColumnDefinitions>
-        <Label x:Name="Text1" Content="1" HorizontalAlignment="Left" Margin="399,212,0,0" VerticalAlignment="Top" FontSize="22"/>
-        <Label x:Name="Text2" Content="Text 2" HorizontalAlignment="Left" Margin="180,199,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="Train_AI_Button" Content="Start Training" HorizontalAlignment="Left" Margin="92,284,0,0" VerticalAlignment="Top" Click="TrainAI" Width="128" Height="56" RenderTransformOrigin="0.477,0.804"/>
-        <UniformGrid Columns="1" Margin="47,268,82,50" Grid.Column="1">
-            <Button x:Name="Button1" Content="Save AI" Click="SaveAI" VerticalAlignment="Center" Margin="0,0,0,0" Width="NaN" Height="50"/>
-            <Button x:Name="Button3" Content="Load Digit" Click="GetNumber" VerticalAlignment="Center" Margin="0,0,0,0" Width="NaN" Height="50"/>
-            <Button x:Name="loadAiButton" Content="Load AI" Click="Load_AI" VerticalAlignment="Center" Margin="0,0,0,0" Width="NaN" Height="50"/>
-            <Button x:Name="clearButton" Content="Clear" Click="ClearCanvas" VerticalAlignment="Center" Margin="0,0,0,0" Width="NaN" Height="50"/>
+        <WpfPlot x:Name="ConfidenceChart" Margin="80,18,84,338" Grid.ColumnSpan="2" RenderTransformOrigin="0.5,0.5" IsTabStop="False" >
+            <WpfPlot.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleX="0.528"/>
+                    <RotateTransform/>
+                    <TranslateTransform X="0.991"/>
+                </TransformGroup>
+            </WpfPlot.RenderTransform>
+        </WpfPlot>
+        <Label x:Name="aiGuessLabel" Content="1" HorizontalAlignment="Left" Margin="416,227,0,0" VerticalAlignment="Top" FontSize="22" FontFamily="Georgia"/>
+        <UniformGrid Columns="1" Margin="90,270,269,185">
+            <Button x:Name="Train_AI_Button" Content="Start Training" Click="TrainAI" RenderTransformOrigin="0.477,0.804" Height="50" HorizontalAlignment="Stretch" Margin="0,0,0,0" Background="#FFB5B5B5" FontFamily="Georgia" FontSize="16" TabIndex="0"/>
+            <Button x:Name="selectTrainingButton" Content="Training File" Click="SelectTrainingData" Height="50" HorizontalAlignment="Stretch" Margin="0,0,0,0" FontFamily="Georgia" FontSize="16" Background="#FFB5B5B5" TabIndex="1"/>
         </UniformGrid>
-        <Canvas x:Name="fakeCanvas" Background="Black" Margin="264,268,276,50" Height="280" Width="280" MouseDown="onCanvasMouseDown" MouseMove="onCanvasMouseMove" MouseUp="onCanvasMouseUp" Grid.ColumnSpan="2"/>
-        <ScottPlot:WpfPlot x:Name="ConfidenceChart" Margin="105,0,105,368" Grid.ColumnSpan="2" />
-        <Image x:Name="testImage" HorizontalAlignment="Left" Height="100" Margin="269,298,0,0" VerticalAlignment="Top" Width="100"/>
-        <TextBox x:Name="InputTextbox" HorizontalAlignment="Left" Margin="137,534,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="38" PreviewTextInput="TextboxRestrictions" KeyDown="inputEnter"/>
-        <Label x:Name="aiInputLabel" Content="Layer Amount:" HorizontalAlignment="Left" Margin="22,530,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.069,1.234"/>
-        <Button x:Name="createAiButton" Content="Confirm" HorizontalAlignment="Left" Margin="180,533,0,0" VerticalAlignment="Top" Click="createButtonClick"/>
-        <Button x:Name="selectTrainingButton" Content="Training File" HorizontalAlignment="Left" Margin="92,367,0,0" VerticalAlignment="Top" Click="SelectTrainingData" Height="52" Width="128"/>
-        <Label x:Name="trainingLabel" Content="Begin Training" HorizontalAlignment="Left" Margin="23,212,0,0" VerticalAlignment="Top"/>
-        <TextBlock x:Name="infoTextblock" HorizontalAlignment="Left" Margin="22,460,0,0" TextWrapping="Wrap" Text="To create a new AI model, please enter the amout of hidden layers and then the node count for each layer one by one." VerticalAlignment="Top" Width="218"/>
+        <UniformGrid Columns="1" Margin="65,268,64,50" Grid.Column="1">
+            <Button x:Name="loadDigitButton" Content="Load Digit" Click="GetNumber" VerticalAlignment="Center" Margin="0,0,0,0" Width="NaN" Height="50" Background="#FFB5B5B5" FontFamily="Georgia" FontSize="16" TabIndex="4"/>
+            <Button x:Name="saveAiButton" Content="Save AI" Click="SaveAI" VerticalAlignment="Center" Margin="0,0,0,0" Width="NaN" Height="50" Background="#FFB5B5B5" FontFamily="Georgia" FontSize="16" TabIndex="5"/>
+            <Button x:Name="loadAiButton" Content="Load AI" Click="Load_AI" VerticalAlignment="Center" Margin="0,0,0,0" Width="NaN" Height="50" Background="#FFB5B5B5" FontFamily="Georgia" FontSize="16" TabIndex="6"/>
+            <Button x:Name="clearButton" Content="Clear" Click="ClearCanvas" VerticalAlignment="Center" Margin="0,0,0,0" Width="NaN" Height="50" Background="#FFB5B5B5" FontFamily="Georgia" FontSize="16" TabIndex="7"/>
+        </UniformGrid>
+        <Canvas x:Name="digitCanvas" Background="Black" Margin="286,269,254,49" Height="280" Width="280" MouseDown="onCanvasMouseDown" MouseMove="onCanvasMouseMove" MouseUp="onCanvasMouseUp" Grid.ColumnSpan="2"/>
+        <Image x:Name="testImage" HorizontalAlignment="Left" Height="100" Margin="292,299,0,0" VerticalAlignment="Top" Width="100"/>
+        <TextBox x:Name="InputTextbox" HorizontalAlignment="Left" TextWrapping="Wrap" Width="41" PreviewTextInput="TextboxRestrictions" KeyDown="inputEnter" Height="29" VerticalAlignment="Top" Margin="152,501,0,0" RenderTransformOrigin="0.5,0.5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TabIndex="2"/>
+        <Label x:Name="aiInputLabel" Content="Layer Amount:" HorizontalAlignment="Left" RenderTransformOrigin="-0.069,1.234" Width="122" FontFamily="Georgia" FontSize="14" VerticalAlignment="Top" Margin="30,501,0,0" HorizontalContentAlignment="Right"/>
+        <Button x:Name="createAiButton" Content="Confirm" HorizontalAlignment="Left" Click="createButtonClick" Background="#FFB5B5B5" Height="26" Width="62" FontFamily="Georgia" VerticalAlignment="Top" Margin="202,501,0,0" TabIndex="3"/>
+        <Label x:Name="trainingLabel" Content="Begin Training" HorizontalAlignment="Right" Margin="0,250,286,0" VerticalAlignment="Top" FontFamily="Georgia"/>
+        <TextBlock x:Name="infoTextblock" HorizontalAlignment="Left" Margin="46,418,0,0" TextWrapping="Wrap" Text="To create a new AI model, please enter the amout of hidden layers and then the node count for each layer one by one." VerticalAlignment="Top" Width="218" Foreground="Black" FontFamily="Georgia" FontSize="14" Height="78"/>
+        <Button Content="Button" HorizontalAlignment="Left" Margin="90,252,0,0" VerticalAlignment="Top" Click="TestAi"/>
 
     </Grid>
 </Window>

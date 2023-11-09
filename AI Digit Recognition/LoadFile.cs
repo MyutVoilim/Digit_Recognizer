@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using Microsoft.Win32;
 
 namespace AI_Digit_Recognition
 {
@@ -45,6 +46,29 @@ namespace AI_Digit_Recognition
                     Console.WriteLine("Error");
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets all lines from a file as a string[]
+        /// </summary>
+        /// <returns></returns>
+        public string[] ReadAllLines()
+        {
+            string[] allLines = File.ReadAllLines(_path);
+            return allLines;
+        }
+
+        /// <summary>
+        /// Opens dialog to select a file
+        /// </summary>
+        public void SelectFile()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+            openFileDialog.Title = "Select a File";
+
+            bool? result = openFileDialog.ShowDialog();
+            if (result.HasValue && result.Value) _path = openFileDialog.FileName;
         }
     }
 
