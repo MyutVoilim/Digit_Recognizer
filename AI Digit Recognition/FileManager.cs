@@ -6,7 +6,7 @@ namespace AI_Digit_Recognition
     /// <summary>
     /// Manages file operations such as reading, writing, and selecting files through dialog windows.
     /// </summary>
-    internal class FileManager
+    internal class FileManager : IFileManager
     {
         private string _path;
 
@@ -63,6 +63,23 @@ namespace AI_Digit_Recognition
         }
 
         /// <summary>
+        /// Appends string[] data to the file at the current path.
+        /// </summary>
+        /// <param name="data">The text to append to the file.</param>
+        public void WriteToFile(string[] data)
+        {
+            if (_path == null) SelectSaveFile();
+            if (_path != null)
+            {
+                using (StreamWriter sw = File.AppendText(_path))
+                {
+
+                    sw.WriteLine(string.Join(",", data));
+                }
+            }
+        }
+
+        /// <summary>
         /// Reads all lines from the file at the current path.
         /// </summary>
         /// <returns>An array of strings containing all lines from the file.</returns>
@@ -70,14 +87,6 @@ namespace AI_Digit_Recognition
         {
             if (_path == null) SelectFile();
             return _path != null ? File.ReadAllLines(_path) : null;
-        }
-
-        /// <summary>
-        /// Deletes the file path
-        /// </summary>
-        public void DeletePath()
-        {
-            _path = null;
         }
 
         /// <summary>
@@ -126,6 +135,15 @@ namespace AI_Digit_Recognition
         public void ClearFile()
         {
             File.WriteAllText(_path, string.Empty);
+        }
+
+        /// <summary>
+        /// Checks to see of a _path exists
+        /// </summary>
+        /// <returns></returns>
+        public bool DoesPathExist()
+        {
+            return (_path != null)? true: false;
         }
 
     }

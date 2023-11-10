@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using Microsoft.Win32;
+using System.Diagnostics;
 
 namespace AI_Digit_Recognition
 {
@@ -39,11 +40,11 @@ namespace AI_Digit_Recognition
                     string[] line = reader.ReadLine().Split(',');
                     for (int i = 1; i < line.Length; i++)
                     {
-                        trainingData[i % 28, i / 28].Value = int.Parse(line[i]);
+                        trainingData[(i - 1) % 28, (i - 1) / 28].Value = int.Parse(line[i]);
                     }
                 } catch(Exception ex)
                 {
-                    Console.WriteLine("Error");
+                    Console.WriteLine("Error ERRORRRRRRRRRRRRRRRRRRRRR");
                 }
             }
         }

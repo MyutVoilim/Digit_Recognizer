@@ -33,20 +33,20 @@ namespace AI_Digit_Recognition
         private bool _isDrawing = false; // Determine when user is drawing on canvas
         private AIDigitModel _digitAiModel; // Structure for AI
         private int[] _confidenceValues = new int[10]; // Values from 0 - 9 holding the confidence values for their respective numbers
-        private float _learningRate = .1f; // Rate that AI adjusts internal values during training, .1f is a fairly large learning rate
-        private int _trainingEpochs = 0; // Amount of times AI iterates through entire training data during training
+        private float _learningRate = .02f; // Rate that AI adjusts internal values during training, .1f is a fairly large learning rate
+        private int _trainingEpochs = 10; // Amount of times AI iterates through entire training data during training
         private string _projectFolder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName; //Get directory for project
         private string _trainingFilePath; //File to traing AI model with
         private int[] _createAiInput;
-        private FileManager _fileManager;
+        private IFileManager _fileManager = new FileManager();
 
         public MainWindow()
         {
             InitializeComponent();
-            _fileManager= new FileManager();
             _trainingFilePath = System.IO.Path.Combine(_projectFolder, @"Data\train.csv");
             _mainCanvas = new CanvasFrame(digitCanvas, _trainingFilePath);
-            _digitAiModel = new AIDigitModel(System.IO.Path.Combine(_projectFolder, @"Data\AiDigitModel.txt"));
+            //_digitAiModel = new AIDigitModel(System.IO.Path.Combine(_projectFolder, @"Data\AiDigitModel.txt"), _fileManager);
+            _digitAiModel = new AIDigitModel(new int[3] { 516, 256, 128 }, _fileManager);
             CreateConfidenceChart();
             UpdateChart();
         }
@@ -132,7 +132,7 @@ namespace AI_Digit_Recognition
         /// Updates the chart to reflect new cofidence values and finds value with highest confidence
         /// </summary>
         private void UpdateChart() {
-            _digitAiModel.ProcessNumber(_mainCanvas.GetCanvasArray());
+            _digitAiModel.ProcessInput(_mainCanvas.GetCanvasArray());
             _confidenceValues = _digitAiModel.GetOutputValues();
 
             aiGuessLabel.Content = _digitAiModel.GetGuessedValue();
@@ -269,7 +269,7 @@ namespace AI_Digit_Recognition
             // If the last value in createAiInput is not 0 then all inputs have been entered and new AI model can be created
             if (_createAiInput[_createAiInput.Length - 1] != 0)
             {
-                _digitAiModel = new AIDigitModel(_createAiInput);
+                _digitAiModel = new AIDigitModel(_createAiInput, _fileManager);
                 aiInputLabel.Content = "Ai Created!";
                 _createAiInput = null;
             }
@@ -351,6 +351,7 @@ namespace AI_Digit_Recognition
         //Add trainging data that actually has the answers
         //Add ability to stop training
         //make IFileManager
+        //potentially run ai until certain accuracy is reached
 
         //!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!
         //make user filemanager is consistent through all classes
