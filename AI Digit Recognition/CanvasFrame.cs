@@ -2,6 +2,8 @@
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Shapes;
+using System.Linq;
+
 
 namespace AI_Digit_Recognition
 {
@@ -16,6 +18,8 @@ namespace AI_Digit_Recognition
         private int _canvasDim;
         //The size of individual blocks withing the grid relative to the canvas size
         private int _blockSize;
+        private FileManager _fileManager;
+        private string[] fileData;
 
         // Constants for drawing intensities
         private const int MaxIntensity = 150;
@@ -33,13 +37,13 @@ namespace AI_Digit_Recognition
             _canvasDim = CanvasDim;
             _blockSize = (int)(_digitCanvas.Width / CanvasDim);
             _dataFile = new LoadFile(file);
-            CreateGrid();
+            CreateGridAndBindData();
         }
 
         /// <summary>
         /// Creates a square grid based on blockSize and binds canvas children to matrix from CanvasData to automatically update when CavasData is changed
         /// </summary>
-        private void CreateGrid()
+        private void CreateGridAndBindData()
         {
             //Loop through each position in _canvasData
             for (int row = 0; row < _canvasDim; row++)
@@ -47,16 +51,19 @@ namespace AI_Digit_Recognition
                 for (int col = 0; col < _canvasDim; col++)
                 {
                     //Fill _canvasData
-                    _canvasData[row, col] = new CanvasData { Value = 0 };
+                    _canvasData[row, col] = new CanvasData { ColorIntensity = 0 };
+
                     //Create the Blocks
                     Rectangle block = new Rectangle();
                     block.Width = _blockSize;
                     block.Height = _blockSize;
+
                     //Tie the Value property from the CanvasData object to each block and convert the int values into grayscale brush values
                     block.DataContext = _canvasData[row, col];
                     Binding binding = new Binding("Value");
                     binding.Converter = new IntToGrayscaleBrushConverter();
                     block.SetBinding(Rectangle.FillProperty, binding);
+
                     //Add Blocks to _digitCanvas
                     _digitCanvas.Children.Add(block);
                     Canvas.SetLeft(block, (row * _blockSize));
@@ -66,24 +73,29 @@ namespace AI_Digit_Recognition
         }
 
         /// <summary>
-        /// Draws on canvas
+        /// Draws on defined cell position faded gradiant around that cell
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
         public void DrawOnGrid(int x, int y)
         {
+            // Converts pixel data into repective cells within canvas grid
             int xPos = x / _blockSize;
             int yPos = y / _blockSize;
+
+            // Check inputs are within canvas dimensions
             if (xPos >= 0 && xPos < _canvasDim && yPos >= 0 && yPos < _canvasDim)
             {
-
+                // Draws center square Cell
                 ValidateDraw(xPos, yPos, MaxIntensity);
-                //Cirlce around clicked point
+
+                // Draws cells directly adjacent from center sqaure
                 ValidateDraw(xPos + 1, yPos, MidIntensity);
                 ValidateDraw(xPos - 1, yPos, MidIntensity);
                 ValidateDraw(xPos, yPos + 1, MidIntensity);
                 ValidateDraw(xPos, yPos - 1, MidIntensity);
-                //Slight gradiant in the corners
+
+                // Draws dimmed cells in corners from center cell
                 ValidateDraw(xPos + 1, yPos - 1, LowIntensity);
                 ValidateDraw(xPos - 1, yPos - 1, LowIntensity);
                 ValidateDraw(xPos + 1, yPos + 1, LowIntensity);
@@ -111,16 +123,6 @@ namespace AI_Digit_Recognition
         /// </summary>
         public int Size { get => (int)_digitCanvas.Width; }
 
-        /// <summary>
-        /// Gets specific canvasData index value
-        /// </summary>
-        /// <param name="row"></param>
-        /// <param name="col"></param>
-        /// <returns></returns>
-        public int GetValueAt(int row, int col)
-        {
-            return _canvasData[row, col].Value;
-        }
 
         /// <summary>
         /// Sets specific canvasData index to a value
@@ -132,7 +134,7 @@ namespace AI_Digit_Recognition
         {
             if (value >= 0 && value <= 255)
             {
-                _canvasData[row, col].Value = value;
+                _canvasData[row, col].ColorIntensity = value;
             }
         }
 
@@ -154,7 +156,7 @@ namespace AI_Digit_Recognition
             {
                 for (int j = 0; j < _canvasDim; j++)
                 {
-                    _canvasData[i, j].Value = 0;
+                    _canvasData[i, j].ColorIntensity = 0;
                 }
             }
         }
@@ -169,7 +171,7 @@ namespace AI_Digit_Recognition
         {
             if (x >= 0 && x < _canvasDim && y >= 0 && y < _canvasDim && intensity >= 0 && intensity <= 255)
             {
-                _canvasData[x, y].Value += intensity;
+                _canvasData[x, y].ColorIntensity += intensity;
             }
         }
 
@@ -184,9 +186,25 @@ namespace AI_Digit_Recognition
             float[] processedData = new float[CanvasDim * CanvasDim];
             for (int i = 0; i < CanvasDim * CanvasDim; i++)
             {
-                processedData[i] = data[i % 28, i / 28].Value;
+                processedData[i] = data[i % 28, i / 28].ColorIntensity;
             }
             return processedData;
+        }
+
+        /// <summary>
+        /// Converts incomming string array data into the format used in CanvasFrame
+        /// </summary>
+        /// <param name="inputData">String data to convert</param>
+        public void convertStringData(string inputData)
+        {
+            // Parse values into int array
+            int[] convertedInputData = inputData.Split(",").Select(int.Parse).ToArray();
+
+            // Convert 1D data into 2D format
+            for (int i = 0; i < convertedInputData.Length; i++)
+            {
+                _canvasData[(i - 1) % 28, (i - 1) / 28].ColorIntensity = convertedInputData[i];
+            }
         }
     }
 }

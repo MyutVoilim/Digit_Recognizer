@@ -40,7 +40,7 @@ namespace AI_Digit_Recognition
                     string[] line = reader.ReadLine().Split(',');
                     for (int i = 1; i < line.Length; i++)
                     {
-                        trainingData[(i - 1) % 28, (i - 1) / 28].Value = int.Parse(line[i]);
+                        trainingData[(i - 1) % 28, (i - 1) / 28].ColorIntensity = int.Parse(line[i]);
                     }
                 } catch(Exception ex)
                 {

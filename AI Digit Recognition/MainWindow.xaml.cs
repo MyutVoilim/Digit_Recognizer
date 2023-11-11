@@ -33,8 +33,8 @@ namespace AI_Digit_Recognition
         private bool _isDrawing = false; // Determine when user is drawing on canvas
         private AIDigitModel _digitAiModel; // Structure for AI
         private int[] _confidenceValues = new int[10]; // Values from 0 - 9 holding the confidence values for their respective numbers
-        private float _learningRate = .02f; // Rate that AI adjusts internal values during training, .1f is a fairly large learning rate
-        private int _trainingEpochs = 10; // Amount of times AI iterates through entire training data during training
+        private float _learningRate = .1f; // Rate that AI adjusts internal values during training, .1f is a fairly large learning rate
+        private int _trainingEpochs = 5; // Amount of times AI iterates through entire training data during training
         private string _projectFolder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName; //Get directory for project
         private string _trainingFilePath; //File to traing AI model with
         private int[] _createAiInput;
@@ -351,9 +351,15 @@ namespace AI_Digit_Recognition
         //Add trainging data that actually has the answers
         //Add ability to stop training
         //make IFileManager
+        //Remove unneccissary using system stuff
+        //Ensure things are titled properly where they are meant to be titled
+        //Make sure UI is named correctly
         //potentially run ai until certain accuracy is reached
 
         //!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!
         //make user filemanager is consistent through all classes
+
+        //CODE THAT HAS BEEN CHECKED AS PASSED
+        //AIDigitModel, FileManager, IFileManager, CanvasData, IntToGrayscale
     }
 }

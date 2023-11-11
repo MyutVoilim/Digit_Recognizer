@@ -57,7 +57,7 @@ namespace AI_Digit_Recognition
         void ClearFile();
 
         /// <summary>
-        /// Checks to see of a _path exists
+        /// Checks to see of a path exists
         /// </summary>
         /// <returns></returns>
         bool DoesPathExist();

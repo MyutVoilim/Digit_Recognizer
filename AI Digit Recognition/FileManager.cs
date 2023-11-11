@@ -29,9 +29,9 @@ namespace AI_Digit_Recognition
 
 
         /// <summary>
-        /// Appends float[] data to the file at the current path.
+        /// Appends float array data to a file.
         /// </summary>
-        /// <param name="data">The text to append to the file.</param>
+        /// <param name="data">Data to append to the file.</param>
         public void WriteToFile(float[] data)
         {
             if (_path == null) SelectSaveFile();
@@ -46,9 +46,9 @@ namespace AI_Digit_Recognition
         }
 
         /// <summary>
-        /// Appends int[] data to the file at the current path.
+        /// Appends integer array data to a file.
         /// </summary>
-        /// <param name="data">The text to append to the file.</param>
+        /// <param name="data">Data to append to the file.</param>
         public void WriteToFile(int[] data)
         {
             if (_path == null) SelectSaveFile();
@@ -63,9 +63,9 @@ namespace AI_Digit_Recognition
         }
 
         /// <summary>
-        /// Appends string[] data to the file at the current path.
+        /// Appends string array data to a file.
         /// </summary>
-        /// <param name="data">The text to append to the file.</param>
+        /// <param name="data">Data to append to the file.</param>
         public void WriteToFile(string[] data)
         {
             if (_path == null) SelectSaveFile();
@@ -90,16 +90,16 @@ namespace AI_Digit_Recognition
         }
 
         /// <summary>
-        /// Defines a path to use
+        /// Sets the path for file operations.
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="path">The file path to use.</param>
         public void DefinePath(string path)
         {
             _path= path;
         }
 
         /// <summary>
-        /// Opens a dialog to select a file and sets it to _path
+        /// Opens a dialog to select a file for operations.
         /// </summary>
         public void SelectFile()
         {
@@ -115,9 +115,8 @@ namespace AI_Digit_Recognition
 
 
         /// <summary>
-        /// Opens a dialog to save a file and returns the selected file's path.
+        /// Opens a dialog to save a file and set its path for operations.
         /// </summary>
-        /// <returns>The path of the file to be saved or null if no location is selected.</returns>
         public void SelectSaveFile()
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog
@@ -130,7 +129,7 @@ namespace AI_Digit_Recognition
         }
 
         /// <summary>
-        /// Clears a file of all text
+        /// Clears the contents of the file at the current path.
         /// </summary>
         public void ClearFile()
         {
@@ -138,7 +137,7 @@ namespace AI_Digit_Recognition
         }
 
         /// <summary>
-        /// Checks to see of a _path exists
+        /// Checks to see of a path exists
         /// </summary>
         /// <returns></returns>
         public bool DoesPathExist()
