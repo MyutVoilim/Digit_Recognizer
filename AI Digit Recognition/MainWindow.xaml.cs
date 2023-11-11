@@ -2,6 +2,7 @@
 using ScottPlot;
 using System;
 using System.Collections.Generic;
+
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -34,19 +35,23 @@ namespace AI_Digit_Recognition
         private AIDigitModel _digitAiModel; // Structure for AI
         private int[] _confidenceValues = new int[10]; // Values from 0 - 9 holding the confidence values for their respective numbers
         private float _learningRate = .1f; // Rate that AI adjusts internal values during training, .1f is a fairly large learning rate
-        private int _trainingEpochs = 5; // Amount of times AI iterates through entire training data during training
+        private int _trainingEpochs = 1; // Amount of times AI iterates through entire training data during training
         private string _projectFolder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName; //Get directory for project
         private string _trainingFilePath; //File to traing AI model with
         private int[] _createAiInput;
         private IFileManager _fileManager = new FileManager();
+        private int currentLine = 1;
+        private string[] stringTrainingData;
 
         public MainWindow()
         {
             InitializeComponent();
             _trainingFilePath = System.IO.Path.Combine(_projectFolder, @"Data\train.csv");
-            _mainCanvas = new CanvasFrame(digitCanvas, _trainingFilePath);
+            _fileManager.DefinePath(_trainingFilePath);
+            stringTrainingData = _fileManager.ReadAllLines();
+            _mainCanvas = new CanvasFrame(digitCanvas);
             //_digitAiModel = new AIDigitModel(System.IO.Path.Combine(_projectFolder, @"Data\AiDigitModel.txt"), _fileManager);
-            _digitAiModel = new AIDigitModel(new int[3] { 516, 256, 128 }, _fileManager);
+            _digitAiModel = new AIDigitModel(new int[3] {516, 256, 128}, _fileManager);
             CreateConfidenceChart();
             UpdateChart();
         }
@@ -58,7 +63,7 @@ namespace AI_Digit_Recognition
         /// <param name="e"></param>
         private void GetNumber(object sender, RoutedEventArgs e)
         {
-            _mainCanvas.LoadLine();
+            DisplayTrainingData();
             UpdateChart();
  
         }
@@ -340,6 +345,14 @@ namespace AI_Digit_Recognition
             _trainingEpochs = int.Parse(epochTextbox.Text);
         }
 
+        /// <summary>
+        /// Cycles through training data to display digits from training file onto canvas screen.
+        /// </summary>
+        private void DisplayTrainingData()
+        {
+            _mainCanvas.ConvertStringData(stringTrainingData[currentLine]);
+            currentLine++;
+        }
 
         //Clean up code
         //Make sure the the use of file is  consistent wither using the class or calling the files directly
@@ -360,6 +373,6 @@ namespace AI_Digit_Recognition
         //make user filemanager is consistent through all classes
 
         //CODE THAT HAS BEEN CHECKED AS PASSED
-        //AIDigitModel, FileManager, IFileManager, CanvasData, IntToGrayscale
+        //AIDigitModel, FileManager, IFileManager, CanvasData, IntToGrayscale, CanvasFrame
     }
 }

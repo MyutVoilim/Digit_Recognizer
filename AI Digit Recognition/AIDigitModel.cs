@@ -250,8 +250,8 @@ namespace AI_Digit_Recognition
                 float[] progressAndAccuracy = new float[2];
 
                 // The correct number the model is trying to guess
-                int targetNumber = 0;
-                float[] inputData;
+                float[][] inputData;
+                int[] targetNumbers;
 
 
                 // Load training data from file if given one or let user select a file
@@ -266,6 +266,17 @@ namespace AI_Digit_Recognition
                         // Load input data
                         string[] lines = _fileManager.ReadAllLines();
 
+                        // Initiate one less then lines to skip label data
+                        inputData = new float[lines.Length - 1][];
+                        targetNumbers = new int[lines.Length - 1];
+
+                        // Parse string data and get target number
+                        for (int i = 0; i < lines.Length - 1; i++)
+                        {
+                            inputData[i] = lines[i + 1].Split(",").Select(float.Parse).ToArray();
+                            targetNumbers[i] = (int)inputData[i][0];
+                        }
+
                         // Calculate how many lines need to be processed, if epoch is 0 then only pass through once
                         totalLines = lines.Length * ((epochs == 0) ? 1 : epochs);
 
@@ -273,33 +284,27 @@ namespace AI_Digit_Recognition
                         for (int epoch = epochs == 0 ? -1 : 0; epoch < epochs; epoch++)
                         {
                             // Skip the first line as it contain label information
-                            foreach (string line in lines.Skip(1))
+                            for (int line = 1; line < inputData.Length; line++)
                             {
-                                // Format data into float[] format
-                                inputData = line.Split(",").Select(float.Parse).ToArray();
-
-                                // First number is the target number
-                                targetNumber = (int)inputData[0];
-
-                                // Process the input data through model, skipping target number
-                                ProcessInput(inputData.Skip(1).ToArray());
+                                // Process data through model
+                                ProcessInput(inputData[line].Skip(1).ToArray());
 
                                 // Backpropagate to correct for errors, if epoch is 0 then only process data
                                 if (epochs > 0)
                                 {
                                     // Correct for errors
-                                    await BackpropagateAsync(targetNumber, learningRate);
+                                    await BackpropagateAsync(targetNumbers[line], learningRate);
                                 }
                                 else
                                 {
                                     // Check if model calculated the correct number
-                                    if (GetGuessedValue() == targetNumber) progressAndAccuracy[1]++;
+                                    if (GetGuessedValue() == targetNumbers[line]) progressAndAccuracy[1]++;
                                 }
 
 
                                 // Iterate progress count and periodically update UI
                                 lineCount++;
-                                if (lineCount % 100 == 0)
+                                if (lineCount % 2000 == 0)
                                 {
                                     progressAndAccuracy[0] = (lineCount / totalLines) * 100;
                                     progress?.Report(progressAndAccuracy);

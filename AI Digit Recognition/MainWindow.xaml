@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:AI_Digit_Recognition"
         xmlns:oxy="http://oxyplot.org/wpf" x:Name="mainWindow" x:Class="AI_Digit_Recognition.MainWindow"
         mc:Ignorable="d"
-        Title="Digit Recognizer" Height="614" Width="820" ResizeMode="NoResize">
+        Title="Digit Recognizer" Height="614" Width="820" ResizeMode="CanMinimize">
     <Grid x:Name="DigitGrid" RenderTransformOrigin="0.585,0.573" Background="White">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="515*"/>
