@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Shapes;
@@ -238,13 +239,14 @@ namespace AI_Digit_Recognition
         /// <param name="progress">IProgress to ping back through UI thread and update UI</param>
         /// <param name="trainingFile">File containing training data</param>
         /// <returns></returns>
-        public async Task Train(float learningRate, int epochs, IProgress<float[]> progress, string? trainingFile = null)
+        public async Task Train(float learningRate, int epochs, IProgress<float[]> progress, CancellationToken cancellationToken, string? trainingFile = null)
         {
             await Task.Run(async () =>
             {
                 // Keep track of progress through training
                 float lineCount = 0;
                 float totalLines = 0;
+                float totalCorrect = 0;
 
                 // formatted as {lineCount, correctGuessCount}
                 float[] progressAndAccuracy = new float[2];
@@ -275,17 +277,27 @@ namespace AI_Digit_Recognition
                         {
                             inputData[i] = lines[i + 1].Split(",").Select(float.Parse).ToArray();
                             targetNumbers[i] = (int)inputData[i][0];
+
+                            // Stops the operation if process is canceled while preload data
+                            cancellationToken.ThrowIfCancellationRequested();
                         }
 
-                        // Calculate how many lines need to be processed, if epoch is 0 then only pass through once
-                        totalLines = lines.Length * ((epochs == 0) ? 1 : epochs);
+                        // Total lines for a single pass
+                        totalLines = inputData.Length;
 
                         // Begin training through entire data set unless epochs is 0, then only process data not train
                         for (int epoch = epochs == 0 ? -1 : 0; epoch < epochs; epoch++)
                         {
+                            // Reset the progress per epoch to get accuracy of a single pass
+                            progressAndAccuracy[1] = 0.0f;
                             // Skip the first line as it contain label information
                             for (int line = 1; line < inputData.Length; line++)
                             {
+                               
+
+                                // Stops the operation if process is canceled
+                                cancellationToken.ThrowIfCancellationRequested();
+
                                 // Process data through model
                                 ProcessInput(inputData[line].Skip(1).ToArray());
 
@@ -298,23 +310,29 @@ namespace AI_Digit_Recognition
                                 else
                                 {
                                     // Check if model calculated the correct number
-                                    if (GetGuessedValue() == targetNumbers[line]) progressAndAccuracy[1]++;
+                                    if (GetGuessedValue() == targetNumbers[line]) totalCorrect++;
                                 }
 
 
                                 // Iterate progress count and periodically update UI
                                 lineCount++;
-                                if (lineCount % 2000 == 0)
+                                if (lineCount % 500 == 0)
                                 {
                                     progressAndAccuracy[0] = (lineCount / totalLines) * 100;
+                                    progressAndAccuracy[1] = (totalCorrect / lineCount) * 100;
                                     progress?.Report(progressAndAccuracy);
                                 }
+
                             }
 
                             // Finish updating UI
                             progressAndAccuracy[1] = (progressAndAccuracy[1] / totalLines) * 100;
                             progress?.Report(progressAndAccuracy);
                         }
+                    }
+                    catch (OperationCanceledException err)
+                    {
+                        Debug.WriteLine("User canceled operation");
                     }
                     catch (FormatException err)
                     {
@@ -611,7 +629,7 @@ namespace AI_Digit_Recognition
                 hiddenErrors[layer] = new float[_hiddenLayers[layer].Length];
 
                 // Loop through every node in the current layer
-                for (int node = 0; node < hiddenLayerLength; node++)
+                for (int node = 0; node < _hiddenLayers[layer].Length; node++)
                 {
                     // Contain the magnitude of the error from the target values, will accumulate the accuracy values from all connection to the right layer
                     float error = 0;

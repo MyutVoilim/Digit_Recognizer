@@ -25,7 +25,7 @@
         </WpfPlot>
         <Label x:Name="aiGuessLabel" Content="1" HorizontalAlignment="Left" Margin="416,227,0,0" VerticalAlignment="Top" FontSize="22" FontFamily="Georgia"/>
         <UniformGrid Columns="1" Margin="90,270,269,185">
-            <Button x:Name="Train_AI_Button" Content="Start Training" Click="TrainAI" RenderTransformOrigin="0.477,0.804" Height="50" HorizontalAlignment="Stretch" Margin="0,0,0,0" Background="#FFB5B5B5" FontFamily="Georgia" FontSize="16" TabIndex="0"/>
+            <Button x:Name="Train_AI_Button" Content="Start Training" RenderTransformOrigin="0.477,0.804" Height="50" HorizontalAlignment="Stretch" Margin="0,0,0,0" Background="#FFB5B5B5" FontFamily="Georgia" FontSize="16" TabIndex="0" Click="Train_AI_Button_Click"/>
             <Button x:Name="selectTrainingButton" Content="Training File" Click="SelectTrainingData" Height="50" HorizontalAlignment="Stretch" Margin="0,0,0,0" FontFamily="Georgia" FontSize="16" Background="#FFB5B5B5" TabIndex="1"/>
         </UniformGrid>
         <UniformGrid Columns="1" Margin="65,268,64,50" Grid.Column="1">
@@ -43,10 +43,18 @@
         <Button Content="Button" HorizontalAlignment="Left" Margin="25,332,0,0" VerticalAlignment="Top" Click="TestAi"/>
         <ProgressBar x:Name="progressBar" HorizontalAlignment="Left" Height="16" Margin="10,21,0,0" VerticalAlignment="Top" Width="785" Grid.ColumnSpan="2" RenderTransformOrigin="0.5,0.44" Visibility="Hidden"/>
         <Label x:Name="trainingLabel" Content="Begin Training" HorizontalAlignment="Right" Margin="0,238,376,0" VerticalAlignment="Top" FontFamily="Georgia"/>
-        <Label x:Name="progressLabel" Content="Start Training!" HorizontalAlignment="Left" Margin="381,16,0,0" VerticalAlignment="Top" RenderTransformOrigin="1.565,1.928" FontFamily="Georgia" Visibility="Collapsed"/>
+        <Label x:Name="progressLabel" Content="0% Completed" HorizontalAlignment="Left" Margin="381,16,0,0" VerticalAlignment="Top" RenderTransformOrigin="1.565,1.928" FontFamily="Georgia" Visibility="Collapsed"/>
         <Label x:Name="accuracyLabel" Content="0%" HorizontalAlignment="Left" Margin="32,192,0,0" VerticalAlignment="Top" FontFamily="Georgia" FontSize="16" RenderTransformOrigin="-0.061,1.208" Visibility="Collapsed"/>
         <TextBox x:Name="epochTextbox" HorizontalAlignment="Left" Margin="10,153,0,0" TextWrapping="Wrap" Text="Enter an Epoch Amount" VerticalAlignment="Top" Width="120" PreviewTextInput="TextboxRestrictions"/>
         <Button x:Name="changeTraining" Content="Change" HorizontalAlignment="Left" Margin="30,118,0,0" VerticalAlignment="Top" Click="ChangeTrainingValues"/>
+        <Menu Margin="0,0,0,547" Grid.ColumnSpan="2">
+            <MenuItem x:Name="saveLodMenuItem" Header="Save/Load">
+                <MenuItem x:Name="saveMenu" Header="Save Model"/>
+                <MenuItem x:Name="loadMenu" Header="Load Model"/>
+            </MenuItem>
+            <MenuItem x:Name="selectTrainingMenu" Header="Training File"/>
+        </Menu>
+        <Button x:Name="checkAccuracyButton" Content="Check Accuracy" HorizontalAlignment="Left" Margin="62,548,0,0" VerticalAlignment="Top" FontFamily="Georgia" Click="checkAccuracyButton_Click"/>
 
     </Grid>
 </Window>

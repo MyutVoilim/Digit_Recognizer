@@ -42,6 +42,8 @@ namespace AI_Digit_Recognition
         private IFileManager _fileManager = new FileManager();
         private int currentLine = 1;
         private string[] stringTrainingData;
+        private CancellationTokenSource _cancellationTokenSource;
+        private bool _isTraining = false;
 
         public MainWindow()
         {
@@ -165,29 +167,40 @@ namespace AI_Digit_Recognition
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void TrainAI(object sender, RoutedEventArgs e)
+        private async void TrainAI()
         {
-            // Set progress components to visible
-            progressBar.Visibility = Visibility.Visible;
-            progressLabel.Visibility= Visibility.Visible;
-
-            // Will update UI when as data is processed, runs on UI thread
-            var progress = new Progress<float[]>(percent =>
-            {
-                progressLabel.Content = $"{(int)percent[0]}% completed";
-                progressBar.Value = (int)percent[0];
-
-                // Only show percentages if epochs is 0, meaning the ai is not training just checking accuracy
-                if (_trainingEpochs == 0) accuracyLabel.Content = (int)percent[1];
-            });
-
+            _cancellationTokenSource = new CancellationTokenSource();
             try
             {
-                (sender as Button).IsEnabled = false;
+                if (_isTraining)
+                {
+                    _cancellationTokenSource?.Cancel();
+                }
+                else
+                {
+                    _isTraining = true;
 
-                // Start the training
-                trainingLabel.Content = "Training...";
-                await _digitAiModel.Train(_learningRate, _trainingEpochs,progress, _trainingFilePath);
+                    // Set progress components to visible
+                    progressBar.Visibility = Visibility.Visible;
+                    progressLabel.Visibility = Visibility.Visible;
+                    accuracyLabel.Visibility = Visibility.Visible;
+
+                    // Will update UI when as data is processed, runs on UI thread
+                    Progress<float[]> progress = new Progress<float[]>(percent =>
+                    {
+                        progressLabel.Content = $"{(int)percent[0]}% Completed";
+                        progressBar.Value = (int)percent[0];
+
+                        // Only show percentages if epochs is 0, meaning the ai is not training just checking accuracy
+                        accuracyLabel.Content = $"{(int)percent[1]}% Accuracy";
+                    });
+
+                    Train_AI_Button.Content = "Stop Training";
+
+                    // Start the training
+                    trainingLabel.Content = "Training...";
+                    await _digitAiModel.Train(_learningRate, _trainingEpochs, progress, _cancellationTokenSource.Token, _trainingFilePath);
+                }
             }
             catch (Exception ex)
             {
@@ -195,16 +208,16 @@ namespace AI_Digit_Recognition
             }
             finally
             {
-                // Re-enable the button
-                (sender as Button).IsEnabled = true;
-                trainingLabel.Content = "Taining is Done!";
+                Train_AI_Button.Content = "Start Training";
 
                 // Remove visiblity of progress components
                 progressBar.Visibility = Visibility.Collapsed;
                 progressLabel.Visibility = Visibility.Collapsed;
                 progressBar.Value = 0;
+                progressLabel.Content = "0% Completed";
 
-                if (_trainingEpochs == 0) accuracyLabel.Visibility = Visibility.Visible;
+                accuracyLabel.Visibility = Visibility.Visible;
+                _isTraining = false;
             }
         }
         
@@ -354,6 +367,18 @@ namespace AI_Digit_Recognition
             currentLine++;
         }
 
+        private void checkAccuracyButton_Click(object sender, RoutedEventArgs e)
+        {
+            _trainingEpochs = 0;
+            TrainAI();
+        }
+
+        private void Train_AI_Button_Click(object sender, RoutedEventArgs e)
+        {
+            _trainingEpochs = 2;
+            TrainAI();
+        }
+
         //Clean up code
         //Make sure the the use of file is  consistent wither using the class or calling the files directly
         //See about configuration files
@@ -368,6 +393,7 @@ namespace AI_Digit_Recognition
         //Ensure things are titled properly where they are meant to be titled
         //Make sure UI is named correctly
         //potentially run ai until certain accuracy is reached
+        //bug where training 0 epcho twice shows accuracy on display as it is training.
 
         //!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!
         //make user filemanager is consistent through all classes
