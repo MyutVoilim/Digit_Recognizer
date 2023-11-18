@@ -61,5 +61,12 @@ namespace AI_Digit_Recognition
         /// </summary>
         /// <returns></returns>
         bool DoesPathExist();
+
+        /// <summary>
+        /// Returns the current path
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        string GetPath();
     }
 }

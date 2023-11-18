@@ -145,5 +145,14 @@ namespace AI_Digit_Recognition
             return (_path != null)? true: false;
         }
 
+        /// <summary>
+        /// Returns the current path
+        /// </summary>
+        /// <returns></returns>
+        public string GetPath()
+        {
+            return _path;
+        }
+
     }
 }

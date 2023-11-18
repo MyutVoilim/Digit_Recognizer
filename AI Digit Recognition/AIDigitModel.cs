@@ -244,8 +244,8 @@ namespace AI_Digit_Recognition
             await Task.Run(async () =>
             {
                 // Keep track of progress through training
-                float lineCount = 0;
                 float totalLines = 0;
+                float totalLineCount = 0;
                 float totalCorrect = 0;
 
                 // formatted as {lineCount, correctGuessCount}
@@ -282,43 +282,42 @@ namespace AI_Digit_Recognition
                             cancellationToken.ThrowIfCancellationRequested();
                         }
 
-                        // Total lines for a single pass
-                        totalLines = inputData.Length;
+                        // Total lines based on epoch count
+                        totalLines = inputData.Length * ((epochs == 0)? 1 : epochs);
 
                         // Begin training through entire data set unless epochs is 0, then only process data not train
-                        for (int epoch = epochs == 0 ? -1 : 0; epoch < epochs; epoch++)
+                        // currentEpoch is set to -1 for allowing that data to still loop through once even when epochs is at 0
+                        for (int currentEpoch = epochs == 0 ? -1 : 0; currentEpoch < epochs; currentEpoch++)
                         {
                             // Reset the progress per epoch to get accuracy of a single pass
-                            progressAndAccuracy[1] = 0.0f;
+                            totalCorrect = 0;
+
                             // Skip the first line as it contain label information
-                            for (int line = 1; line < inputData.Length; line++)
+                            for (int lineCount = 1; lineCount < inputData.Length; lineCount++)
                             {
-                               
+
 
                                 // Stops the operation if process is canceled
                                 cancellationToken.ThrowIfCancellationRequested();
 
                                 // Process data through model
-                                ProcessInput(inputData[line].Skip(1).ToArray());
+                                ProcessInput(inputData[lineCount].Skip(1).ToArray());
 
                                 // Backpropagate to correct for errors, if epoch is 0 then only process data
                                 if (epochs > 0)
                                 {
                                     // Correct for errors
-                                    await BackpropagateAsync(targetNumbers[line], learningRate);
+                                    await BackpropagateAsync(targetNumbers[lineCount], learningRate);
                                 }
-                                else
-                                {
-                                    // Check if model calculated the correct number
-                                    if (GetGuessedValue() == targetNumbers[line]) totalCorrect++;
-                                }
+                                // Check if model calculated the correct number
+                                if (GetGuessedValue() == targetNumbers[lineCount]) totalCorrect++;
 
 
                                 // Iterate progress count and periodically update UI
-                                lineCount++;
+                                totalLineCount++;
                                 if (lineCount % 500 == 0)
                                 {
-                                    progressAndAccuracy[0] = (lineCount / totalLines) * 100;
+                                    progressAndAccuracy[0] = (totalLineCount / totalLines) * 100;
                                     progressAndAccuracy[1] = (totalCorrect / lineCount) * 100;
                                     progress?.Report(progressAndAccuracy);
                                 }
@@ -326,13 +325,13 @@ namespace AI_Digit_Recognition
                             }
 
                             // Finish updating UI
-                            progressAndAccuracy[1] = (progressAndAccuracy[1] / totalLines) * 100;
                             progress?.Report(progressAndAccuracy);
                         }
                     }
                     catch (OperationCanceledException err)
                     {
                         Debug.WriteLine("User canceled operation");
+                        throw;
                     }
                     catch (FormatException err)
                     {
@@ -357,6 +356,20 @@ namespace AI_Digit_Recognition
                     {
                         MessageBox.Show("No file selected for training.", "File Required", MessageBoxButton.OK, MessageBoxImage.Warning);
                     });
+                } 
+            }, cancellationToken).ContinueWith(task =>
+            {
+                if (task.IsCanceled)
+                {
+                    Debug.WriteLine("Training task was canceled.");
+                }
+                else if (task.IsFaulted)
+                {
+                    Debug.WriteLine("Training task encountered an error.");
+                }
+                else
+                {
+                    Debug.WriteLine("Training task completed successfully.");
                 }
             });
         }
