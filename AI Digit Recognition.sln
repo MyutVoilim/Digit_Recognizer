@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AI Digit Recognition", "AI Digit Recognition\AI Digit Recognition.csproj", "{E531413F-86B8-4EEB-B474-6D58D42F34BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AI Digit Recognition", "AI Digit Recognition\AI Digit Recognition.csproj", "{E531413F-86B8-4EEB-B474-6D58D42F34BA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AI_Digit_Recognition_Test", "TestProject1\AI_Digit_Recognition_Test.csproj", "{CC5EEC4F-4612-469A-9A6F-87DBBA55C800}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{E531413F-86B8-4EEB-B474-6D58D42F34BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E531413F-86B8-4EEB-B474-6D58D42F34BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E531413F-86B8-4EEB-B474-6D58D42F34BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC5EEC4F-4612-469A-9A6F-87DBBA55C800}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC5EEC4F-4612-469A-9A6F-87DBBA55C800}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC5EEC4F-4612-469A-9A6F-87DBBA55C800}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC5EEC4F-4612-469A-9A6F-87DBBA55C800}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

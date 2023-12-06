@@ -21,7 +21,7 @@ namespace AI_Digit_Recognition
     /// Values are corrected through a defined learning rate which will effect the degree of change in the system and a backpropigation function will correct errors
     /// in the system to slowly improve the ability of the network.
     /// </summary>
-    internal class AIDigitModel
+    public class AIDigitModel
     {
         private Random rand = new Random(); // Used in initialization of weights
         private IFileManager _fileManager;// Manage read from and wrtie to files
@@ -67,7 +67,7 @@ namespace AI_Digit_Recognition
         /// <summary>
         /// Saves AI model data to a file
         /// </summary>
-        public void SaveToFile()
+        public void SaveToFile(string? aiModelSaveFile = null)
         {
             // Get hidden layer dimensions used in loading
             int[] hiddenLayerData = new int[_hiddenLayers.Length];
@@ -76,8 +76,9 @@ namespace AI_Digit_Recognition
                 hiddenLayerData[i] = _hiddenLayers[i].Length;
             }
 
-            // Allow user to select a new save path
-            _fileManager.SelectSaveFile();
+            // Allow user to select a new save path if one is not specified
+            if (aiModelSaveFile == null) _fileManager.SelectSaveFile();
+            else _fileManager.DefinePath(aiModelSaveFile);
 
             if (_fileManager.DoesPathExist())
             {

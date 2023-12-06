@@ -6,7 +6,7 @@ namespace AI_Digit_Recognition
     /// <summary>
     /// Manages file operations such as reading, writing, and selecting files through dialog windows.
     /// </summary>
-    internal class FileManager : IFileManager
+    public class FileManager : IFileManager
     {
         private string _path;
 

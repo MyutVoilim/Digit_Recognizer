@@ -23,6 +23,7 @@ using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using Microsoft.Extensions.Configuration;
 
 namespace AI_Digit_Recognition
 {
@@ -56,9 +57,6 @@ namespace AI_Digit_Recognition
         // Holds the training data in string format
         private string[] _stringTrainingData;
 
-        // Tracks the path of the project folder
-        private string _projectFolder = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName; //Get directory for project
-
         // File to traing AI model with
         private string _trainingFilePath; 
 
@@ -69,15 +67,19 @@ namespace AI_Digit_Recognition
 
         public MainWindow()
         {
+            // Get default training file from configuration files
+            var builder = new ConfigurationBuilder().AddJsonFile("appSettings.json", optional: true, reloadOnChange: true);
+            var configuration = builder.Build();
+            _trainingFilePath = configuration["DefaultTrainingFile"];
+
             InitializeComponent();
             // Get location of default training file and store data
-            _trainingFilePath = System.IO.Path.Combine(_projectFolder, @"Data\train.csv");
             _fileManager.DefinePath(_trainingFilePath);
             StoreTrainingData();
 
             // Intialize new DigitCanvas and create an AI model
             _mainCanvas = new CanvasFrame(DigitCanvas);
-            _digitAiModel = new AIDigitModel(new int[2] {32, 16}, _fileManager);
+            _digitAiModel = new AIDigitModel(configuration["DefaultModel"], _fileManager);
 
             // Update UI to show default values
             CreateConfidenceChart();

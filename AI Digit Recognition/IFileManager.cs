@@ -9,7 +9,7 @@ namespace AI_Digit_Recognition
     /// <summary>
     /// Defines the contract for file operations such as reading, writing, and selecting files.
     /// </summary>
-    internal interface IFileManager
+    public interface IFileManager
     {
         /// <summary>
         /// Appends float array data to a file.
