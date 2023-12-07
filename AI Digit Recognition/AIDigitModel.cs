@@ -1,14 +1,10 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Shapes;
 
 namespace AI_Digit_Recognition
 {
@@ -329,7 +325,7 @@ namespace AI_Digit_Recognition
                             progress?.Report(progressAndAccuracy);
                         }
                     }
-                    catch (OperationCanceledException err)
+                    catch (OperationCanceledException)
                     {
                         Debug.WriteLine("User canceled operation");
                         throw;

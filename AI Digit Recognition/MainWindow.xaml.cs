@@ -1,35 +1,23 @@
-﻿using Microsoft.Win32;
-using ScottPlot;
-using System;
-using System.Collections.Generic;
-
-using System.Diagnostics;
-using System.Diagnostics.Metrics;
-using System.IO;
+﻿using System;
 using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
 using Microsoft.Extensions.Configuration;
 
 namespace AI_Digit_Recognition
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// MainWindow serves as the main interface for the AI Digit Recognition application. 
+    /// It allows for user interactions with the application's graphical interface, 
+    /// managing tasks such as controlling training variables and proccesses, drawing on the canvas, and viewing
+    /// visualizations for the AI's processing and controls such as confidence values and accuracy values.
+    /// It allows the user to handle training the AI through learning rate,epoch count, staring and stopping training
+    /// along with managing training file and loading and saving previously trained models.
     /// </summary>
+
     public partial class MainWindow : Window
     {
         private IFileManager _fileManager = new FileManager();
@@ -492,19 +480,5 @@ namespace AI_Digit_Recognition
             if (CheckValidInput(InputTextbox)) CreateAiAsync(int.Parse(InputTextbox.Text));
             InputTextbox.Clear();
         }
-
-
-        //Make sure the the use of file is  consistent wither using the class or calling the files directly
-        //See about configuration files
-        //Add documentation
-        //Add unit testing
-        //Rearage and put regions on all classes
-        //Add regions and make sure thing are xml commented and spelled correctly
-        //Remove unneccissary using system stuff
-        //Ensure things are titled properly where they are meant to be titled
-        //Make sure UI is named correctly
-
-        //CODE THAT HAS BEEN CHECKED AS PASSED
-        //AIDigitModel, FileManager, IFileManager, CanvasData, IntToGrayscale, CanvasFrame
     }
 }

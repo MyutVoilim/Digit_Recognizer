@@ -52,6 +52,25 @@ namespace AI_Digit_Recognition
             CreateGridAndBindData();
         }
 
+        /// <summary>
+        /// Constructor that creates its own canvas mainly for testing purposes
+        /// </summary>
+        /// <param name="digitCanvas">Canvas componenet</param>
+        public CanvasFrame()
+        {
+            // Create INotifyPopertyChanged array that will attach to canvas cells
+            _canvasData = new CanvasData[CanvasDim, CanvasDim];
+
+            // Attached Canvas that will be data bound
+            _digitCanvas = new Canvas();
+
+            // Calculates cells sizes based on Canvas pixel count and Intended Canvas Dimensions
+            _blockSize = (int)(_digitCanvas.Width / CanvasDim);
+
+            // Creates cell grid and binds _canvasData to the repective positions
+            CreateGridAndBindData();
+        }
+
         #region Public Methods And Properties
         /// <summary>
         /// Gets canvas property
