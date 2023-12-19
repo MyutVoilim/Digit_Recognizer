@@ -1,23 +1,44 @@
-# AI Digit Recognizer
-This is a passion project is meant to be the culmination of my skills in planning, design, and in general software development applied to subject i'm passionate about and is increasingly relavent, Artifical Intelligence. Adherings to OOP princables and applying concepting such as DRY and SOLID, This proejct is a Feed-Forwards Neural Network (FNN) that uses back propigation to train and improve at recognizing digits 0 - 9 built from the ground up. This project is highly interactive and allows for users to dynamically view the confidience values for digit that the user either activly draws or digits from the training data.
+# Table of Contents
 
-This is a passion project meant to demonstrate my software devlopment skills and apply my OOP skills to a complex and challenging
-
-I am a problem solver and 
-
-Some features that this program has are
-- A canvas for the user to draw their own digits on
-- Accuracy of the Neural Network
-- Active visualization for how confident the Network is for any given number that the user is drawing or a digit from the training data
-- The ability to create new strucutres for a personal network such as changing layer count and the repective node count for those layers, along with the ability to change the learning rate and epoch count
-- The option to train/stop and test the accuracy of your neural network
 # Introduction
+## AI Digit Recognizer
+![Digit Recognizer 2](https://github.com/MyutVoilim/Projects-Portfolio/assets/54462267/b6f11075-d122-4dbc-96d6-03a7fa03f8d2)
 
-C#
-Visual Studio
-OOP
-.Net 7.0
+<b>Technologies:</b> C# | WPF | .Net Framework | Visual Studio
 
+<b>Overview:</b> Utilizing the power of machine learning to recognize hand-drawn digits, this complex passion project is a from-scratch feed-forward neural network that implements backpropagation for error correction and it is the culmination of my journey as a developer and problem-solver. It not only showcases my proficiency in C#, OOP, and machine learning but also reflects my growth in planning, designing, and testing complex systems. Built with WPF in the .Net framework, this application offers an engaging and intuitive user experience.
+
+<b>Features:</b>
+- <b>Interactive Design:</b> allowing the user to draw or load digits with real-time confidence value feedback.
+- <b>Customizable Neural Networks:</b> featuring the ability to create custom neural networks by defining hidden layer sizes and node counts.
+- <b>Adjustable Training Parameters:</b> Control over training parameters such as learning rates and epoch counts to influence training route.
+- <b>User-Friendly Interface:</b> Including dynamic visuals, progress bars, accuracy tracking, and confidence value displays.
+- <b>Model Management:</b> Save, load, and swap out training data for greater flexibility and experimentation.
+
+<b>Introduction to Me and the Project</b>
+
+https://github.com/MyutVoilim/Projects-Portfolio/assets/54462267/df073c76-e715-49eb-9d00-9c8d300d937c
+
+<b>Project Demo</b>
+
+https://github.com/MyutVoilim/Projects-Portfolio/assets/54462267/197f9e12-64d2-480d-b767-73c9e4ce858b
+
+<b>Challenges Overcome:</b>
+- <b>Comprehensive Design and Development:</b> navigated the complexities of implementing a neural network in C#, applying OOP principles to create a robust system.
+- <b>Testing and Reliability:</b> : Employed rigorous unit testing to ensure system reliability, which was crucial in identifying and resolving challenging bugs related to the complex journey data takes from the input, processing, backpropagation, and eventually the output.
+- <b>Documentation and Learning:</b> The project was not just a technical challenge but also an opportunity to refine my skills in creating comprehensive documentation and understanding the intricacies of neural network behaviors.
+
+# Getting Started
+
+# Usage
+
+# Architecture and Design
+
+# Code Examples
+
+# FAQs
+
+# Acknowledgement
 
 
 
