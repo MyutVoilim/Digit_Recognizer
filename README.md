@@ -2,7 +2,7 @@
 
 # Introduction
 ## AI Digit Recognizer
-![Digit Recognizer 2](https://github.com/MyutVoilim/Projects-Portfolio/assets/54462267/b6f11075-d122-4dbc-96d6-03a7fa03f8d2)
+![Drawing Digit](https://github.com/MyutVoilim/AI-Digit-Recognition/assets/54462267/b828eb05-9e14-4003-aa21-da5b8b68619e)
 
 <b>Technologies:</b> C# | WPF | .Net Framework | Visual Studio
 
@@ -29,6 +29,40 @@ https://github.com/MyutVoilim/Projects-Portfolio/assets/54462267/197f9e12-64d2-4
 - <b>Documentation and Learning:</b> The project was not just a technical challenge but also an opportunity to refine my skills in creating comprehensive documentation and understanding the intricacies of neural network behaviors.
 
 # Getting Started
+### Drawing and Loading Digits
+The user may draw their own digits against their trained networks or load digits from the training file.
+
+![Drawing Digit](https://github.com/MyutVoilim/AI-Digit-Recognition/assets/54462267/b871d1ee-12d8-445f-be80-55a7250ae9da)
+
+Confidence Values will display the current confidence for each digit 0 - 9 with the most highest value displayed as the final guess.
+
+![AI Overview Confidence Values Highlight](https://github.com/MyutVoilim/AI-Digit-Recognition/assets/54462267/7cd0ec3a-5eaa-4324-ac24-cf7cff687d2e)
+
+
+### Starting/Stopping Training
+You can start training based on current learning rate and epoch count. Training may be stopped at any time with training automatically stopping after 100% progression through the current training cycle.
+
+![Starting Training](https://github.com/MyutVoilim/AI-Digit-Recognition/assets/54462267/22ef94e3-0f1b-4772-8bf6-6f013d864343)
+
+Accuracy of the current model can be tracked and progression of the training cylcle monitored
+
+![AI Overview Accuracy-Progress Highlight](https://github.com/MyutVoilim/AI-Digit-Recognition/assets/54462267/b1da1f37-d52a-4aaa-9865-4dc0db5e3d2a)
+
+
+### Adjusting Training Paramters
+Training parameters can be controlled to influance rate of training and epoch count for the next training cycle. Generally a higher learning rate will mean quick results but it might not be as fine tuned as a slower learning rate. Epoch just controls how many times over the network is training over the data.
+
+![Changing Parameters](https://github.com/MyutVoilim/AI-Digit-Recognition/assets/54462267/756255b5-c9dd-4eae-9ae4-6134d40eb2d1)
+
+### Creating New Neural Network
+A new neural network structure can be defined to experiment with different sized layers and nodes counts. This will greatly effect how long training takes.
+
+![Creating AI](https://github.com/MyutVoilim/AI-Digit-Recognition/assets/54462267/9105245b-f3bf-44dc-b185-1bd313242da7)
+
+### Loading and Saving Models
+If you'd like to save a successful model or load an old one simply click the Save/Load button and select a file location.
+
+![AI Overview Save-Load Highlight](https://github.com/MyutVoilim/AI-Digit-Recognition/assets/54462267/1644223d-3385-43fd-8677-6605c576a5e8)
 
 # Usage
 
