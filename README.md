@@ -1,6 +1,8 @@
 # Table of Contents
 
 # Introduction
+This documentation is meant to provide an overview of my neural network application, installation instructions, usage instructions, and a in-depth anaysis of the development of the project from motivation to internal logic.
+
 ## AI Digit Recognizer
 ![Drawing Digit](https://github.com/MyutVoilim/AI-Digit-Recognition/assets/54462267/b828eb05-9e14-4003-aa21-da5b8b68619e)
 
