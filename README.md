@@ -167,10 +167,44 @@ It takes uncomfortable challenges to spot weaknesses. I bring that mentality to 
  
 # FAQs
 
-# Acknowledgement
+# Installation
 
+Prerequisites
+- [Visual Studio 2022](https://visualstudio.microsoft.com/vs/)
+- [.Net 7.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
 
+1.
+Cloning using Command Line
+git Clone (put repo url)
+cd [repository name]
 
+2.
+Open Visual Studio 2022.
+Select 'File' > 'Open' > 'Project/Solution'.
+Navigate to the project directory.
+Select the solution (.sln) file and click 'Open'.
+
+3. installing NuGet packages
+   Right-click on the project in Solution Explorer and select 'Manage NuGet Packages'.
+Browse for the following packages and install them:
+  - Microsoft.Extensions.Configuration
+  - Microsoft.Extensions.Configuration.Json
+  - ScottPlot.WPF
+Make sure to select the correct versions as per your project requirements.
+
+4. 
+Open the Package Manager Console by going to 'Tools' > 'NuGet Package Manager' > 'Package Manager Console'.
+Run the following commands:
+  Install-Package Microsoft.Extensions.Configuration
+  Install-Package Microsoft.Extensions.Configuration.Json
+  Install-Package ScottPlot.WPF
+
+5. Build project and run
+Go to 'Build' > 'Build Solution' to compile the project.
+
+Select 'Debug' > 'Start Without Debugging' to run the application.
+
+   
 # Key Concepts
 - Purpose
 - Chanlleges
