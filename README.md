@@ -1,5 +1,8 @@
 # Table of Contents
-
+- Overview
+- Installation
+- Instructions
+- Architecture and Design
 # Introduction
 This documentation is meant to provide an overview of my neural network application, installation instructions, usage instructions, and a in-depth anaysis of the development of the project from motivation to internal logic.
 
