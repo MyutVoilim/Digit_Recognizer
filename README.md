@@ -175,8 +175,8 @@ Prerequisites
 
 1.
 Cloning using Command Line
-git Clone (put repo url)
-cd [repository name]
+git Clone (https://github.com/MyutVoilim/AI-Digit-Recognition.git)
+cd AI-Digit_recognition
 
 2.
 Open Visual Studio 2022.
