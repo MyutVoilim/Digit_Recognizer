@@ -1,8 +1,10 @@
 # Table of Contents
-- Overview
-- [Installation](#Getting-Started)
-- [Instructions](##Installation)
-- Architecture and Design
+- [Overview](#Digit-Recognizer-Overview)
+- [Installation](#Installation)
+- [Usage Instructions](#Usage-Instructions)
+- [Motives and Design](#Motives-and-Design)
+- [Challanges and Consideration](#Challanges-and-Consideration)
+- [Final Thoughts](#Final-Thoughts)
 # Introduction
 This documentation is meant to provide an overview of my neural network application, installation instructions, usage instructions, and a in-depth anaysis of the development of the project from motivation to internal logic.
 
@@ -34,9 +36,7 @@ https://github.com/MyutVoilim/Projects-Portfolio/assets/54462267/197f9e12-64d2-4
 - <b>Documentation and Learning:</b> The project was not just a technical challenge but also an opportunity to refine my skills in creating comprehensive documentation and understanding the intricacies of neural network behaviors.
 
 
-# Getting Started
-
-## Installation
+# Installation
 <b>Prerequisites</b>
 
 - [Visual Studio 2022](https://visualstudio.microsoft.com/vs/)
@@ -57,7 +57,7 @@ Select 'Debug' > 'Start Without Debugging' To run the application
 
 ![Visual Run](https://github.com/MyutVoilim/Digit_Recognizer/assets/54462267/6c94bedd-0e95-4b11-bbe7-dc7f1331435f)
 
-## Usage Instructions
+# Usage Instructions
 In order to get the most out of this application here are various options that can be taken to run and understand what is happening.
 
 ### Drawing and Loading Digits
@@ -96,7 +96,7 @@ If you'd like to save a successful model or load an old one simply click the Sav
 ![AI Overview Save-Load Highlight](https://github.com/MyutVoilim/AI-Digit-Recognition/assets/54462267/1644223d-3385-43fd-8677-6605c576a5e8)
 
 
-# Architecture and Design
+# Motives and Design
 ### <b>Motives</b>
 It was important for this project to represent the skills I’ve attained over years through personal and academic software development. Not only to showcase my abilities in the development process but to challenge my comfort zone with a complex objective. This would refine my techniques and help snuff out issues improving my skill set. 
 
@@ -134,7 +134,7 @@ The project consists of two primary components: the User Interface (UI) and the 
 
 
 	
-### Challanges
+# Challanges and Consideration
 While its important to have UI elements for a coherent design and facilitate enjoyable user interactions, there is a complex backbone that runs the neural network and the process that must occur for this all to function in tandem. In this more technical component I’m going to focus on the process of the neural network. I will go over several major components to which I will mention A brief overview of the difficulties around neural network design, what I implemented and it purpose, snippets of the code, as well as considerations and pitfalls in my implementation.
 
 
@@ -187,7 +187,7 @@ Their are several components of my approach that likely limit performance. First
 
 When it comes to the error correction, my loss function is not a traditional approach. I realized on analysis that the loss function used is actually only applied on the output layer when traditionally it would be calculated on a per layer basis. The system still seems to be effective for my application, however, it is only a partial loss function that could be improved. While I do use sigmoid to give output probabilities between 0 and 1, it may not be fully utilized since I do not apply a softmax distribution to the output layer. What this means is that the probability distribution of the system may equal greater than 1 with all outputs combined instead of being a classical probability total of 1. This could hurt the nature of how the system makes adjustments as well as make it difficult to work with other loss functions that rely on that foundation such as cross-entropy. The use of a static learning rate is also limiting as a more adaptive approach could allow for initially larger adjustments for quick convergence and later shift to a slower rate to complete convergence onto the minimum.
 
-### Final Thoughts
+# Final Thoughts
 My main focus with this project was to take on a challenge while critically analyzing and documenting my process. Their were a million things I changed and adjusted while developing and, as mentioned throughout this documentation, a million more that I could have changed. There is a difficult line that must be drawn in software development for when to “complete” a project, especially in the context of something with limitless potential as a neural network. I the real world that Is usually dead lines and development power, in my case it was when to stop and analyze. What was most important was to try and understand the processes that make this neural network work and what pit falls and potential improvements could be made. 
 
 I think that the nature of how neural networks even come to “learn”  and retain information is incredibly interesting and problematic. It is not always straight forward how information is created/stored and the effects adjustments have on this process when making improvements to a system. Their are decades of empirical evidence for effective methodologies to increase performance and continuous attempts to understand the true nature of how a neural networks operate. However, increasing the complexity of the architecture, methodologies, and scale of these systems creates a fuzzy black box of processes that work in ways we may not be able to comprehend, even if we claim we do. I learned so much in creating this from helping push my fundamentals to learning about complex systems, and most importantly my weaknesses and what I can strife to improve.
