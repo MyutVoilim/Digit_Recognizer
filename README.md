@@ -1,12 +1,12 @@
 # Table of Contents
 - Overview
-- Installation
-- Instructions
+- [Installation](#Getting-Started)
+- [Instructions](##Installation)
 - Architecture and Design
 # Introduction
 This documentation is meant to provide an overview of my neural network application, installation instructions, usage instructions, and a in-depth anaysis of the development of the project from motivation to internal logic.
 
-## AI Digit Recognizer
+## Digit Recognizer Overview
 ![Drawing Digit](https://github.com/MyutVoilim/AI-Digit-Recognition/assets/54462267/b828eb05-9e14-4003-aa21-da5b8b68619e)
 
 <b>Technologies:</b> C# | WPF | .Net Framework | Visual Studio
@@ -33,7 +33,33 @@ https://github.com/MyutVoilim/Projects-Portfolio/assets/54462267/197f9e12-64d2-4
 - <b>Testing and Reliability:</b> : Employed rigorous unit testing to ensure system reliability, which was crucial in identifying and resolving challenging bugs related to the complex journey data takes from the input, processing, backpropagation, and eventually the output.
 - <b>Documentation and Learning:</b> The project was not just a technical challenge but also an opportunity to refine my skills in creating comprehensive documentation and understanding the intricacies of neural network behaviors.
 
+
 # Getting Started
+
+## Installation
+<b>Prerequisites</b>
+
+- [Visual Studio 2022](https://visualstudio.microsoft.com/vs/)
+- [.Net 7.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+
+
+Open Visual Studio 2022 > Select 'Clone a repository'
+
+![Clone Visual Studio](https://github.com/MyutVoilim/Digit_Recognizer/assets/54462267/f8a33bc9-0ebb-4cab-a7e2-6082403d7d31)
+
+
+Select 'Build' > 'Build Solution'
+
+![Visual Build](https://github.com/MyutVoilim/Digit_Recognizer/assets/54462267/cd84de93-2c48-40fa-9eac-4a4c11f52b9b)
+
+
+Select 'Debug' > 'Start Without Debugging' To run the application
+
+![Visual Run](https://github.com/MyutVoilim/Digit_Recognizer/assets/54462267/6c94bedd-0e95-4b11-bbe7-dc7f1331435f)
+
+## Usage Instructions
+In order to get the most out of this application here are various options that can be taken to run and understand what is happening.
+
 ### Drawing and Loading Digits
 The user may draw their own digits against their trained networks or load digits from the training file.
 
@@ -69,7 +95,6 @@ If you'd like to save a successful model or load an old one simply click the Sav
 
 ![AI Overview Save-Load Highlight](https://github.com/MyutVoilim/AI-Digit-Recognition/assets/54462267/1644223d-3385-43fd-8677-6605c576a5e8)
 
-# Usage
 
 # Architecture and Design
 ### <b>Motives</b>
@@ -170,41 +195,6 @@ It takes uncomfortable challenges to spot weaknesses. I bring that mentality to 
  
 # FAQs
 
-# Installation
-
-Prerequisites
-- [Visual Studio 2022](https://visualstudio.microsoft.com/vs/)
-- [.Net 7.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
-
-1.
-Cloning using Command Line
-git Clone (https://github.com/MyutVoilim/AI-Digit-Recognition.git) AI-Digit-Recognition
-
-2.
-Open Visual Studio 2022.
-Select 'File' > 'Open' > 'Project/Solution'.
-Navigate to the project directory.
-Select the solution (.sln) file and click 'Open'.
-
-3. installing NuGet packages
-   Right-click on the project in Solution Explorer and select 'Manage NuGet Packages'.
-Browse for the following packages and install them:
-  - Microsoft.Extensions.Configuration
-  - Microsoft.Extensions.Configuration.Json
-  - ScottPlot.WPF
-Make sure to select the correct versions as per your project requirements.
-
-4. 
-Open the Package Manager Console by going to 'Tools' > 'NuGet Package Manager' > 'Package Manager Console'.
-Run the following commands:
-  Install-Package Microsoft.Extensions.Configuration
-  Install-Package Microsoft.Extensions.Configuration.Json
-  Install-Package ScottPlot.WPF
-
-5. Build project and run
-Go to 'Build' > 'Build Solution' to compile the project.
-
-Select 'Debug' > 'Start Without Debugging' to run the application.
 
    
 # Key Concepts
