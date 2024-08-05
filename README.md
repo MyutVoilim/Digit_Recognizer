@@ -13,14 +13,14 @@ This documentation provides an overview of my neural network application, instal
 ![Drawing Digit](https://github.com/MyutVoilim/AI-Digit-Recognition/assets/54462267/b828eb05-9e14-4003-aa21-da5b8b68619e)
 
 ### Overview
- Utilizing the power of machine learning to recognize hand-drawn digits, this passion project is a from-scratch feed-forward neural network that implements backpropagation and gradient-descent for error correction. This is the culmination of my journey as a developer and problem-solver. It not only showcases my proficiency in C#, OOP, and machine learning but also reflects my growth in planning, designing, and testing complex systems. Built using WPF in the .Net framework, this application offers an interactive, responsive, and customization user experience.
+ Utilizing the power of machine learning to recognize hand-drawn digits, this passion project is a from-scratch feed-forward neural network that implements backpropagation and gradient-descent for error correction. This is the culmination of my journey as a developer and problem-solver. It not only showcases my proficiency in C#, OOP, and machine learning but also reflects my growth in planning, designing, and testing complex systems. Built using WPF in the .Net Core, this application offers an interactive, responsive, and customization user experience.
 
 ### Tools
 - <b>C#:</b> I chose C# to push my boundaries and deepen my expertise in a industry-standard language known for its scalability and efficiency. My goal was to enhance my proficiency in Microsoft's ecosystem, taking advantage of C#'s seamless integration with .NET and WPF.
 
-- <b>WPF</b> built on the .NET Framework, this provides a powerful framework for developing rich graphical user interfaces. Its extensive support for data binding, styles, and templates makes it ideal for creating complex user interactions required for this project.
+- <b>WPF</b> built on the .NET Core, this provides a powerful framework for developing rich graphical user interfaces. Its extensive support for data binding, styles, and templates makes it ideal for creating complex user interactions required for this project.
 
-- <b>Integrated Development Environment:</b> I selected Visual Studio 2022 due to its comprehensive support for WPF and the .NET Framework, which were integral to building the UI for this project using C#. Visual Studio's rich set of diagnostic tools, integrated version control, and CI/CD capabilities make it ideal for managing complex software projects. These features streamline the development process from coding in C# to designing responsive interfaces and ensuring robust application performance.
+- <b>Integrated Development Environment:</b> I selected Visual Studio 2022 due to its comprehensive support for WPF and the .NET Core, which were integral to building the UI for this project using C#. Visual Studio's rich set of diagnostic tools, integrated version control, and CI/CD capabilities make it ideal for managing complex software projects. These features streamline the development process from coding in C# to designing responsive interfaces and ensuring robust application performance.
 
 - <b>Version Controlling:</b> Along side my IDE I used GitHub for version controlling to create changes within my main and experimental branches. This is an indispensable tool for testing experimental updates before pushing to the main branch and avoiding destructive alterations the can hurt functionality or create bugs. GitHub allows for a remote repository for an off-side code base that adds safety and remote capabilities.
 
@@ -37,7 +37,7 @@ This documentation provides an overview of my neural network application, instal
 - <b>Confidence Values:</b> As users interact with the network by inputting digits, the system displays real-time confidence values for each guess. This feature gives users a window into the network's reasoning, showing how closely the AI thinks the input matches known digits.
 - <b>Accuracy Tracker:</b> An integrated accuracy tracker offers valuable data, allowing users to monitor the network’s performance and make informed adjustments to the learning parameters. This tool is essential for optimizing the network's accuracy throughout the training process.
 - <b>Progress Bar:</b> To enhance user experience with immediate feedback, a progress bar visually indicates the current state of the learning cycle. This not only informs users of the ongoing process but also adds to the overall interactive experience, keeping users engaged by showing real-time progress.
-<b>Technologies:</b> C# | WPF | .Net Framework | Visual Studio | GitHub
+<b>Technologies:</b> C# | WPF | .Net Core | Visual Studio | GitHub | MSTest
 
 <b>Introduction to Me and the Project</b>
 
@@ -126,9 +126,9 @@ With that sentiment and the growing importance of artificial intelligence, in pa
 ### Tools
 - <b>C#:</b> I chose C# to push my boundaries and deepen my expertise in a industry-standard language known for its scalability and efficiency. My goal was to enhance my proficiency in Microsoft's ecosystem, taking advantage of C#'s seamless integration with .NET and WPF.
 
-- <b>WPF</b> built on the .NET Framework, this provides a powerful framework for developing rich graphical user interfaces. Its extensive support for data binding, styles, and templates makes it ideal for creating complex user interactions required for this project.
+- <b>WPF</b> built on the .NET Core, this provides a powerful framework for developing rich graphical user interfaces. Its extensive support for data binding, styles, and templates makes it ideal for creating complex user interactions required for this project.
 
-- <b>Integrated Development Environment:</b> I selected Visual Studio 2022 due to its comprehensive support for WPF and the .NET Framework, which were integral to building the UI for this project using C#. Visual Studio's rich set of diagnostic tools, integrated version control, and CI/CD capabilities make it ideal for managing complex software projects. These features streamline the development process from coding in C# to designing responsive interfaces and ensuring robust application performance.
+- <b>Integrated Development Environment:</b> I selected Visual Studio 2022 due to its comprehensive support for WPF and the .NET Core, which were integral to building the UI for this project using C#. Visual Studio's rich set of diagnostic tools, integrated version control, and CI/CD capabilities make it ideal for managing complex software projects. These features streamline the development process from coding in C# to designing responsive interfaces and ensuring robust application performance.
 
 - <b>Version Controlling:</b> Along side my IDE I used GitHub for version controlling to create changes within my main and experimental branches. This is an indispensable tool for testing experimental updates before pushing to the main branch and avoiding destructive alterations the can hurt functionality or create bugs. GitHub allows for a remote repository for an off-side code base that adds safety and remote capabilities.
 
